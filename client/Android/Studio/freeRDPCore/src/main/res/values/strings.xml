@@ -207,4 +207,7 @@
     <string name="dlg_msg_clear_cert_cache">Are you sure you want to delete all your cached Certificates?</string>
     <string name="debug_level">Debug Level</string>
     <string name="settings_debug">Debug Settings</string>
+    <string name="dlg_login_info">Information</string>
+    <string name="dlg_login_info_content">To Be Construction</string>
+    <string name="ok">OK</string>
 </resources>
