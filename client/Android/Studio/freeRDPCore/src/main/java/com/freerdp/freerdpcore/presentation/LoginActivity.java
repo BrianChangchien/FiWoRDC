@@ -55,7 +55,7 @@ public class LoginActivity extends Activity {
     private static final String[]paths = {"cesbg.com"};
     // UI Control
     private ImageButton btn_info, btn_network;
-
+    private Button btn_login;
     ArrayAdapter<String> adapterLocationType;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +93,35 @@ public class LoginActivity extends Activity {
                 process_setting_Network();
             }
         });
+
+        btn_login = (Button) findViewById(R.id.loginbutton);
+        btn_login.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick( View v)
+            {
+                process_login();
+            }
+        });
+    }
+
+    private void process_login() {
+        goto_next_activity(DesktopPoolActivity.class);
+    }
+
+    private void goto_next_activity(Class<?> cls) {
+        Intent i = new Intent();
+        i.setClass(context, cls);
+    /*i.putExtra(appdefine.b_activity_auto_restore_last_4_channel_in_view, false);
+        i.putExtra(appdefine.b_OnePlayerView, true);
+        i.putExtra(appdefine.b_autoload_channel_at_first_view, true);
+
+        i.putExtra("URL1", m_edt1.getText().toString());
+        i.putExtra("URL2", m_edt2.getText().toString());
+        i.putExtra("URL3", m_edt3.getText().toString());
+        i.putExtra("URL4", m_edt4.getText().toString());
+        */
+        startActivity(i);
     }
 
     protected void process_show_help()
@@ -123,6 +152,7 @@ public class LoginActivity extends Activity {
         dialog.setContentView(R.layout.activity_fiwo_server_setting);
         dialog.setTitle("伺服器設置");
         dialog.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
+        dialog.setCancelable(true);
         dialog.show();
 
     }

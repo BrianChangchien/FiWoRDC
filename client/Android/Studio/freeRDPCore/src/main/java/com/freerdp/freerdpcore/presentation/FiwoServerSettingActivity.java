@@ -1,17 +1,16 @@
 package com.freerdp.freerdpcore.presentation;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import com.freerdp.freerdpcore.R;
 
 public class FiwoServerSettingActivity extends Activity {
 
-    private Button btnSummit, btnCancel;
+    private Button btnCheckConnect, btnFinish;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,34 +20,34 @@ public class FiwoServerSettingActivity extends Activity {
 
     private void process_ui() {
 
-        btnSummit = (Button) findViewById(R.id.btnFiwoServerSummit);
+        btnCheckConnect = (Button) findViewById(R.id.btnFiwoServerCheckConnect);
 
         // add listener to button
-        btnSummit.setOnClickListener(new OnClickListener() {
+        btnCheckConnect.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
-                process_press_summit();
+                process_press_checkconnect();
             }
 
         });
 
-        btnCancel = (Button) findViewById(R.id.btnFiwoServerCannel);
-        btnCancel.setOnClickListener(new OnClickListener()
+        btnFinish = (Button) findViewById(R.id.btnFiwoServerFinish);
+        btnFinish.setOnClickListener(new OnClickListener()
         {
             @Override
             public void onClick( View v)
             {
-                process_press_cancel();
+                process_press_finish();
             }
         });
 
     }
 
-    private void process_press_summit() {
+    private void process_press_checkconnect() {
 
     }
-    private void process_press_cancel() {
+    private void process_press_finish() {
 
     }
 

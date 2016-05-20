@@ -23,19 +23,32 @@
             android:textColor="#000"
             android:text="FiWo伺服器位置"
             android:layout_marginTop="1dp" />
-
-        <EditText
-            android:layout_width="fill_parent"
+         <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editFIWOaddress"
-            android:gravity="center"
-            android:textColor="#000"
-            android:textAppearance="?android:attr/textAppearanceSmallInverse"
-            android:editable="true"
-            android:background="#ffffff"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp">
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editFIWOaddress"
+                android:gravity="center"
+                android:textColor="#000"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:editable="true"
+                android:background="#ffffff"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="20"
+                android:layout_marginTop="5dp" />
+             <ImageView
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:id="@+id/btnFiwoServerConnectStatus"
+                 android:background="@drawable/icon_connect"
+                 android:layout_weight="1"
+                />
+        </LinearLayout>l
         <TextView
             android:id="@+id/textFiWoAddressExample"
             android:layout_width="fill_parent"
@@ -44,31 +57,27 @@
             android:textColor="#c1b7b7"
             android:text="範例 : fiwoserver.cesbg.foxconn, 10.62.8.234"
             android:layout_marginTop="1dp" />
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
+        <Button
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="確定"
-                android:layout_weight="1"
-                android:textColor="#ffffff"
-                android:id="@+id/btnFiwoServerSummit"
-                android:background="@drawable/btn_submit"
-                android:layout_marginLeft="30dp" />
+            android:text="檢查連線"
+            android:textColor="#ffffff"
+            android:id="@+id/btnFiwoServerCheckConnect"
+            android:background="@drawable/btn_bg_blue"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:clickable="true" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="完成"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:id="@+id/btnFiwoServerFinish"
+            android:background="@drawable/btn_bg_green"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center_horizontal"
+            android:clickable="true" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="取消"
-                android:layout_weight="1"
-                android:textColor="#ffffff"
-                android:id="@+id/btnFiwoServerCannel"
-                android:background="@drawable/btn_cancel"
-                android:layout_marginRight="30dp"
-                android:layout_marginLeft="30dp" />
-        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
