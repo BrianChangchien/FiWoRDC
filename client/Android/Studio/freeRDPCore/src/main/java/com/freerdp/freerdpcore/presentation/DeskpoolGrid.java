@@ -1,12 +1,16 @@
 package com.freerdp.freerdpcore.presentation;
 
+import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.freerdp.freerdpcore.R;
 
@@ -50,6 +54,9 @@ public class DeskpoolGrid extends BaseAdapter{
             grid = inflater.inflate(R.layout.grid_deskpool_single, null);
             TextView textView = (TextView) grid.findViewById(R.id.grid_single_text);
             ImageView imageView = (ImageView)grid.findViewById(R.id.grid_single_image);
+            Button BtnConnect = (Button)grid.findViewById(R.id.grid_btn_connect);
+            BtnConnect.setOnClickListener(new ItemButton_Click((Activity) mContext , position));
+
             //textView.setText(web[position]);
            // imageView.setImageResource(Imageid[position]);
         } else {
@@ -58,4 +65,22 @@ public class DeskpoolGrid extends BaseAdapter{
         return grid;
 
     }
+
+    //自訂按鈕監聽事件
+    class ItemButton_Click implements View.OnClickListener {
+        private int position;
+        private Activity mainActivity;
+
+        ItemButton_Click(Activity context, int pos) {
+            this.mainActivity = context;
+            position = pos;
+        }
+
+        public void onClick(View v) {
+            Toast.makeText(mainActivity, "Connect Button clicked", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
 }

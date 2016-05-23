@@ -58,7 +58,10 @@
                 android:scrollbars="vertical"
                 android:id="@+id/gridView_deskpool"
                 android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:choiceMode="singleChoice" />
         </LinearLayout>
 
 </RelativeLayout>
