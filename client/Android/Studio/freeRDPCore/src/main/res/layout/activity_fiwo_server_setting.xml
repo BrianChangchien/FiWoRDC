@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
 
-    tools:context="com.freerdp.freerdpcore.presentation.FiwoServerSettingActivity">
+    tools:context="com.freerdp.freerdpcore.presentation.FiwoServerSetting">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,10 +44,9 @@
              <ImageView
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
-                 android:id="@+id/btnFiwoServerConnectStatus"
-                 android:background="@drawable/icon_connect"
+                 android:id="@+id/ImgViewFiwoServerConnectStatus"
                  android:layout_weight="1"
-                />
+                 android:visibility="invisible" />
         </LinearLayout>l
         <TextView
             android:id="@+id/textFiWoAddressExample"
@@ -66,7 +65,7 @@
             android:background="@drawable/btn_bg_blue"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"
-            android:clickable="true" />
+            />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,10 +73,10 @@
             android:gravity="center"
             android:textColor="#ffffff"
             android:id="@+id/btnFiwoServerFinish"
-            android:background="@drawable/btn_bg_green"
+            android:background="@drawable/btn_bg_grey"
             android:layout_marginTop="10dp"
             android:layout_gravity="center_horizontal"
-            android:clickable="true" />
+           />
 
     </LinearLayout>
 </RelativeLayout>

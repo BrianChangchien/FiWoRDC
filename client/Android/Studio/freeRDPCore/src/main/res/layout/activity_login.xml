@@ -58,6 +58,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:editable="true"
                 android:hint="Account"
+                android:text="Anson"
                 android:textSize="8dp"
                 android:background="#ffffff" />
 
@@ -72,6 +73,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:hint="Password"
                 android:textSize="8dp"
+                android:text="Aa12345678"
                 android:background="#ffffff" />
             <Spinner
                 android:id="@+id/locationSpinner"
@@ -80,6 +82,8 @@
                 android:layout_marginLeft="335dp"
                 android:layout_marginTop="0dp"
                 android:spinnerMode="dialog"
+                android:textColor="@android:color/black"
+                android:textSize="11dp"
                 style="@android:style/Widget.Holo.Light.Spinner"/>
 
             <Button
@@ -91,8 +95,9 @@
                 android:textColor="#ffffff"
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:textSize="10dp"
-                android:background="@drawable/btn_login"
-                android:id="@+id/loginbutton" />
+                android:background="@drawable/btn_bg_grey"
+                android:id="@+id/loginbutton"
+                android:enabled="false"/>
 
         </LinearLayout>
     </ScrollView>
