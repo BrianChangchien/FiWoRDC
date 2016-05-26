@@ -2,6 +2,8 @@ package com.freerdp.freerdpcore.presentation;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.freerdp.freerdpcore.R;
+
+import org.json.JSONException;
 
 
 /**
@@ -57,7 +61,7 @@ public class DeskpoolGrid extends BaseAdapter{
             Button BtnConnect = (Button)grid.findViewById(R.id.grid_btn_connect);
             BtnConnect.setOnClickListener(new ItemButton_Click((Activity) mContext , position));
 
-            //textView.setText(web[position]);
+            textView.setText(web[position]);
            // imageView.setImageResource(Imageid[position]);
         } else {
             grid = (View) convertView;
@@ -77,7 +81,15 @@ public class DeskpoolGrid extends BaseAdapter{
         }
 
         public void onClick(View v) {
-            Toast.makeText(mainActivity, "Connect Button clicked", Toast.LENGTH_SHORT).show();
+            String sPos = "Position : ";
+            sPos += Integer.toString(position);
+            Toast.makeText(mainActivity, sPos + "Connect Button clicked", Toast.LENGTH_SHORT).show();
+            try {
+                ((DesktopPoolActivity) mContext).process_connect_deskpool_vm(position);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

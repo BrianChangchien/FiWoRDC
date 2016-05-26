@@ -36,6 +36,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,6 +47,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ZoomControls;
 
@@ -60,6 +62,10 @@ import com.freerdp.freerdpcore.services.LibFreeRDP;
 import com.freerdp.freerdpcore.utils.ClipboardManagerProxy;
 import com.freerdp.freerdpcore.utils.KeyboardMapper;
 import com.freerdp.freerdpcore.utils.Mouse;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class SessionActivity extends ActionBarActivity implements
 		LibFreeRDP.UIEventListener, KeyboardView.OnKeyboardActionListener,
@@ -541,6 +547,18 @@ public class SessionActivity extends ActionBarActivity implements
 
 		mClipboardManager = ClipboardManagerProxy.getClipboardManager(this);
 		mClipboardManager.addClipboardChangedListener(this);
+		try {
+			JSONObject jsonConnect = new JSONObject(getIntent().getStringExtra("connectObj"));
+			String sName = "FiWoRDC : ";
+			sName += jsonConnect.getString("osName");
+			sName += "(";
+			sName += jsonConnect.getString("ip");
+			sName += ")";
+			setTitle(sName);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
@@ -646,11 +664,26 @@ public class SessionActivity extends ActionBarActivity implements
 				else
 					assert false;
 			}
+			try {
+				JSONObject jsonConnect = new JSONObject(intent.getStringExtra("connectObj"));
+				JSONObject jLoginInfo = new JSONObject(intent.getStringExtra("loginObj"));
 
-			if (bookmark != null)
-				connect(bookmark);
-			else
-				closeSessionActivity(RESULT_CANCELED);
+				bookmark = new ManualBookmark();
+				bookmark.<ManualBookmark>get().setHostname(
+						jsonConnect.getString("ip"));
+				bookmark.<ManualBookmark>get().setPort(jsonConnect.getInt("port"));
+				bookmark.<ManualBookmark>get().setDomain(jLoginInfo.getString("domain"));
+				bookmark.<ManualBookmark>get().setUsername(jLoginInfo.getString("account"));
+				bookmark.<ManualBookmark>get().setPassword(jLoginInfo.getString("password"));
+				if (bookmark != null)
+					connect(bookmark);
+				else
+					closeSessionActivity(RESULT_CANCELED);
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
 		} else {
 			// no session found - exit
 			closeSessionActivity(RESULT_CANCELED);

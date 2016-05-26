@@ -87,6 +87,7 @@ public class LoginActivity extends Activity {
     private String sFiWoSvrAddr;
     private EditText edtAccount, edtPassword;
     private ProgressDialog pDialog;
+    private JSONArray arrClient;
     private static MyHandler mHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +166,7 @@ public class LoginActivity extends Activity {
             edtPassword.setError("請輸入密碼");
             return;
         }
+
         show_process_dialog(false);
         Thread thread = new Thread(ThreadGetClientInfo);
         thread.start();
@@ -173,6 +175,11 @@ public class LoginActivity extends Activity {
 
     private void goto_next_activity(Class<?> cls) {
         Intent i = new Intent();
+        if (arrClient.length() > 0) {
+            JSONArray arrDeskpools = new JSONArray();
+            arrDeskpools = arrClient;
+            i.putExtra("deskpool", arrDeskpools.toString());
+        }
         i.setClass(context, cls);
     /*i.putExtra(appdefine.b_activity_auto_restore_last_4_channel_in_view, false);
         i.putExtra(appdefine.b_OnePlayerView, true);
@@ -183,6 +190,15 @@ public class LoginActivity extends Activity {
         i.putExtra("URL3", m_edt3.getText().toString());
         i.putExtra("URL4", m_edt4.getText().toString());
         */
+        try {
+            JSONObject jsonLoginInfo = new JSONObject();
+            jsonLoginInfo.put("account", edtAccount.getText().toString());
+            jsonLoginInfo.put("password",edtPassword.getText().toString());
+            jsonLoginInfo.put("domain", spinner.getSelectedItem().toString());
+            i.putExtra("logininfo", jsonLoginInfo.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         startActivity(i);
     }
 
@@ -209,7 +225,7 @@ public class LoginActivity extends Activity {
             if (resEntity != null) {
                 result = EntityUtils.toString(resEntity);
 
-                ParseClientInfotoAry(result );
+                arrClient = ParseClientInfotoAry(result);
             }
             int nstate_code = response.getStatusLine().getStatusCode();
             if ((200 == nstate_code) || 204 == nstate_code) {
@@ -277,26 +293,17 @@ public class LoginActivity extends Activity {
         return jDomains.toString();
     }
 
-    private void ParseClientInfotoAry(String sClientInfo) throws JSONException {
+    private JSONArray ParseClientInfotoAry(String sClientInfo) throws JSONException {
         JSONObject soapDatainJsonObject = null;
         soapDatainJsonObject = XML.toJSONObject(sClientInfo);
-        /*
-        JSONObject jdeskpool = soapDatainJsonObject.getJSONObject("deskpool");
-        Iterator x = jdeskpool.keys();
-        JSONArray jAryDeskpool  = new JSONArray();
 
-        while (x.hasNext()){
-            String key = (String) x.next();
-            jAryDeskpool.put(jdeskpool.get(key));
-        }
-        */
-
-        JSONArray arr = soapDatainJsonObject.getJSONObject("deskpools").getJSONArray("deskpool");
-
+        return soapDatainJsonObject.getJSONObject("deskpools").getJSONArray("deskpool");
+            /*
         for(int i=0; i<arr.length(); i++){
             JSONObject o = arr.getJSONObject(i);
             System.out.println(o);
         }
+        */
         //jObjectDomains = jObject.getJSONObject("domains");
            // jObjectDomain = jObjectDomains.getJSONObject("domain");
             //sObjectDomainName = jObjectDomain.getString("domainName");

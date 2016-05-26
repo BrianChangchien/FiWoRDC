@@ -310,19 +310,19 @@ public class BookmarkBase implements Parcelable, Cloneable {
 		}
 	// Session Settings
 		public DebugSettings(Parcel parcel) {
-			asyncChannel = parcel.readInt() == 1;
-			asyncTransport = parcel.readInt() == 1;
-			asyncInput = parcel.readInt() == 1;
-			asyncUpdate = parcel.readInt() == 1;
+			asyncChannel = parcel.readInt() == 0;
+			asyncTransport = parcel.readInt() == 0;
+			asyncInput = parcel.readInt() == 0;
+			asyncUpdate = parcel.readInt() == 0;
 			debug = parcel.readInt();
 		}
 
 		private void init() {
 			debug = 0;
-			asyncChannel = true;
-			asyncTransport = true;
-			asyncInput = true;
-			asyncUpdate = true;
+			asyncChannel = false;
+			asyncTransport = false;
+			asyncInput = false;
+			asyncUpdate = false;
 		}
 
 		public int getDebugLevel() {

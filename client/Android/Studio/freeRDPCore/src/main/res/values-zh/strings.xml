@@ -23,7 +23,7 @@
     <string name="menu_ext_keyboard">功能键</string>
     <string name="menu_touch_pointer">触控鼠标</string>
     <string name="menu_home">主目录</string>
-    <string name="menu_disconnect">断开连接</string>
+    <string name="menu_disconnect">中斷連線</string>
     <!-- List section headers -->
     <string name="section_bookmarks">手动连接</string>
     <string name="section_active_sessions">活动会话数</string>

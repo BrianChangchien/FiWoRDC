@@ -16,11 +16,22 @@ import android.widget.Toast;
 
 import com.freerdp.freerdpcore.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
 public class DesktopPoolActivity extends Activity {
 
     private ImageButton btn_info, btn_logout;
     private View PreviousView, DefaultView ;
+    private JSONArray arrDeskpools;
+    private JSONObject jsonLoginInfo;
     GridView grid;
+    String[] web;
+    int[] imageId;
+    /*
     String[] web = {
             "Google",
             "Github",
@@ -41,16 +52,27 @@ public class DesktopPoolActivity extends Activity {
             R.drawable.help_icon,
             R.drawable.help_icon
     };
-
+   */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_desktop_pool);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+
+        try {
+            JSONArray jsonArray = new JSONArray(getIntent().getStringExtra("deskpool"));
+            arrDeskpools = jsonArray;
+            JSONObject jsonLogin = new JSONObject(getIntent().getStringExtra("logininfo"));
+            jsonLoginInfo = jsonLogin;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         process_ui();
     }
 
-    private void process_ui() {
+    private void process_ui()  {
+
         btn_info = (ImageButton) findViewById(R.id.imgBtn_deskpool_info);
         btn_info.setOnClickListener(new View.OnClickListener()
         {
@@ -75,6 +97,36 @@ public class DesktopPoolActivity extends Activity {
     }
 
     private void process_grid_deskpool() {
+        web = new String[arrDeskpools.length()];
+        imageId = new int[arrDeskpools.length()];
+        for(int i=0; i<arrDeskpools.length(); i++){
+            JSONObject jsondeskpool = null;
+            try {
+                jsondeskpool = arrDeskpools.getJSONObject(i);
+                String sName;
+                String sPoolType ;
+                if (jsondeskpool.getString("type").equals("private")) {
+                    sName = jsondeskpool.getString("osName");
+                    sPoolType = "<私有虛擬機>";
+                    sName +="\n";
+                    sName += sPoolType + "\n";
+                    sName += "(" +jsondeskpool.getString("container")+")";
+                }
+                else{
+                    sName = jsondeskpool.getString("name");
+                    sPoolType = "<公有桌面池>";
+                    sName +="\n";
+                    sName += sPoolType + "\n";
+                    sName += "(" +jsondeskpool.getString("container")+")";
+                }
+                web[i] = sName;
+                imageId[i] =  R.drawable.help_icon;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
         DeskpoolGrid adapter = new DeskpoolGrid(DesktopPoolActivity.this, web, imageId);
         grid=(GridView)findViewById(R.id.gridView_deskpool);
         grid.setAdapter(adapter);
@@ -134,4 +186,23 @@ public class DesktopPoolActivity extends Activity {
 
     private void process_show_help() {
     }
+
+    protected void process_connect_deskpool_vm(int nPos) throws JSONException {
+        /*
+        JSONArray arrDeskpools = new JSONArray();
+        arrDeskpools = arrClient;
+        i.putExtra("deskpool", arrDeskpools.toString());
+        */
+        JSONObject jsonConnectObj = arrDeskpools.getJSONObject(nPos);
+        String refStr = "";
+        Bundle bundle = new Bundle();
+        bundle.putString(SessionActivity.PARAM_CONNECTION_REFERENCE, refStr);
+
+        Intent sessionIntent = new Intent(this, SessionActivity.class);
+        sessionIntent.putExtras(bundle);
+        sessionIntent.putExtra("connectObj", jsonConnectObj.toString());
+        sessionIntent.putExtra("loginObj", jsonLoginInfo.toString());
+        startActivity(sessionIntent);
+    }
+
 }

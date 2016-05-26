@@ -45,8 +45,8 @@ public class FiwoServerSetting extends Dialog implements
         private boolean isPause = false;
         private boolean isStop = true;
 
-        private static int delay = 20000;  //1s
-        private static int period = 30000;  //1s
+        private static int delay = 15000;  //1s
+        private static int period = 15000;  //1s
 
         public Activity c;
         private static MyHandler mHandler;
@@ -251,7 +251,7 @@ public class FiwoServerSetting extends Dialog implements
             pDialog = new ProgressDialog(this.getContext());
 
             pDialog.setTitle("");
-            pDialog.setMessage("Loding");
+            pDialog.setMessage("Loading");
         }
 
         pDialog.setCancelable(b_can_cancel);

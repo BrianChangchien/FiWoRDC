@@ -17,17 +17,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="140dp"
         android:textSize="12sp"
-        android:text="TJB公有池\n(公共桌面池)"
         android:layout_gravity="center"
         android:gravity="center"
         android:layout_alignRight="@+id/grid_single_image"
         android:layout_alignLeft="@+id/grid_single_image">
     </TextView>
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="25dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:background="@drawable/btn_bg_green"
         android:text="連線"
+        android:textColor="#fff"
+        android:textSize="14dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:id="@+id/grid_btn_connect"
@@ -35,7 +36,7 @@
         android:layout_alignLeft="@+id/grid_single_image"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_marginTop="87dp"
+        android:layout_marginTop="89dp"
         android:visibility="invisible" />
 
 </RelativeLayout>

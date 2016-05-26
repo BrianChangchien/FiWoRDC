@@ -11,17 +11,20 @@
 	<item android:id="@+id/session_touch_pointer"
 		  android:title="@string/menu_touch_pointer"
 		  android:icon="@drawable/icon_menu_touch_pointer"
+		  android:visible="false"
 		  android:showAsAction="ifRoom"
 	/>
 	<item android:id="@+id/session_sys_keyboard"
 		  android:title="@string/menu_sys_keyboard"
 		  android:icon="@drawable/icon_menu_sys_keyboard"
+		  android:visible="false"
 		  android:showAsAction="ifRoom"
 	/>
 	<item android:id="@+id/session_ext_keyboard"
 		  android:title="@string/menu_ext_keyboard"
 		  android:icon="@drawable/icon_menu_ext_keyboard"
 		  android:showAsAction="ifRoom"
+		android:visible="false"
 	/>
 	<item android:id="@+id/session_disconnect"
 		  android:title="@string/menu_disconnect"
