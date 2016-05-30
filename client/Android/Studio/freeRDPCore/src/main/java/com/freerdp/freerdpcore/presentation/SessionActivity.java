@@ -551,9 +551,9 @@ public class SessionActivity extends ActionBarActivity implements
 			JSONObject jsonConnect = new JSONObject(getIntent().getStringExtra("connectObj"));
 			String sName = "FiWoRDC : ";
 			sName += jsonConnect.getString("osName");
-			sName += "(";
+			/*sName += "(";
 			sName += jsonConnect.getString("ip");
-			sName += ")";
+			sName += ")";*/
 			setTitle(sName);
 		} catch (JSONException e) {
 			e.printStackTrace();

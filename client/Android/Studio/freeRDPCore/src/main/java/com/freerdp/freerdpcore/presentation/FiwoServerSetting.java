@@ -69,7 +69,7 @@ public class FiwoServerSetting extends Dialog implements
 
     private Runnable ThreadHandshake = new Runnable() {
         public void run() {
-            // 運行網路連線的程式         
+            // 運行網路連線的程式
             String r = sendHttpGetHandShake();
 
             if (r.equals("200") || r.equals("201")) {
@@ -189,6 +189,7 @@ public class FiwoServerSetting extends Dialog implements
         ImageView imgStatus = (ImageView) findViewById(R.id.ImgViewFiwoServerConnectStatus);
         imgStatus.setVisibility(View.INVISIBLE);
         btnFinish.setBackgroundResource(R.drawable.btn_bg_grey);
+        btnFinish.setEnabled(false);
     }
 
     public void setDialogResult(OnMyDialogResult dialogResult){
@@ -206,8 +207,7 @@ public class FiwoServerSetting extends Dialog implements
         btnCheckConnect.setOnClickListener(this);
         btnFinish.setOnClickListener(this);
         btnFinish.setEnabled(false);
-
-       // sFiwoServerAddr = editFiwoServerAddr.getText().toString();
+        // sFiwoServerAddr = editFiwoServerAddr.getText().toString();
     }
 
 

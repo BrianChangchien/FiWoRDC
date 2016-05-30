@@ -62,7 +62,7 @@ public class DeskpoolGrid extends BaseAdapter{
             BtnConnect.setOnClickListener(new ItemButton_Click((Activity) mContext , position));
 
             textView.setText(web[position]);
-           // imageView.setImageResource(Imageid[position]);
+            imageView.setImageResource(Imageid[position]);
         } else {
             grid = (View) convertView;
         }
@@ -83,7 +83,7 @@ public class DeskpoolGrid extends BaseAdapter{
         public void onClick(View v) {
             String sPos = "Position : ";
             sPos += Integer.toString(position);
-            Toast.makeText(mainActivity, sPos + "Connect Button clicked", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(mainActivity, sPos + "Connect Button clicked", Toast.LENGTH_SHORT).show();
             try {
                 ((DesktopPoolActivity) mContext).process_connect_deskpool_vm(position);
             } catch (JSONException e) {

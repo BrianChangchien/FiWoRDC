@@ -207,7 +207,8 @@
     <string name="dlg_msg_clear_cert_cache">Are you sure you want to delete all your cached Certificates?</string>
     <string name="debug_level">Debug Level</string>
     <string name="settings_debug">Debug Settings</string>
-    <string name="dlg_login_info">Information</string>
-    <string name="dlg_login_info_content">To Be Construction</string>
+    <string name="dlg_login_info">求助</string>
+    <string name="dlg_login_info_content">1. 第一次使用，請先進行連線設定。\n2. 由右上角「網路圖示」進入設定畫面。\n3. 輸入 IP位址或DNS域名後，按下「檢查連線」按鈕。\n4. 出現「連線成功」圖示，按下「完成」回到登入頁，此時系統將自動帶入可使用的域名。\n5. 輸入正確帳號、密碼，「Login」按鈕就會轉為綠色可點擊狀態。</string>
+    <string name="dlg_deskpool_info_content">1. 登入成功後，請於桌面池選擇一台虛擬機。\n2.\n方法一：點選「公有桌面池」，再點選「連線」，即可連線由系統隨機分配的閒置虛擬機。\n方法二：點選由已授權使用的「私有虛擬機」，再點選「連線」即可開始使用。\n3. 設定默認：如有設定默認功能，系統30秒後將自動與該虛擬機連線。\n4. 設定「默認」：在「未選取」的狀態下長按圖示，可將該虛擬機設定「默認」。\n5. 取消「默認」：在「未選取」的狀態下長按圖示，可取消「默認」。</string>
     <string name="ok">OK</string>
 </resources>

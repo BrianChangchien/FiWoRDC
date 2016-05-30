@@ -25,6 +25,7 @@
         android:xlargeScreens="true" />
 
     <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <android:uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <application android:theme="@style/Theme.Main">
 
@@ -108,7 +109,11 @@
 
         <activity android:name=".presentation.LoginActivity" />
         <activity android:name=".presentation.DesktopPoolActivity" />
-        <activity android:name=".presentation.FiwoServerSettingActivity"></activity>
+        <activity android:name=".presentation.FiwoServerSettingActivity"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

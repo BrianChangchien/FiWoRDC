@@ -5,11 +5,17 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,7 +27,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.ContactsContract;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -64,6 +72,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -78,10 +87,9 @@ public class LoginActivity extends Activity {
 
     final Context context = this;
     private Spinner spinner;
-    private static final String[]paths = {"cesbg.com"};
     private FiwoServerSetting fd ;
     // UI Control
-    private ImageButton btn_info, btn_network;
+    private ImageButton btn_info, btn_network, btn_reload;
     private Button btn_login;
     private String sDomain;
     private String sFiWoSvrAddr;
@@ -98,63 +106,142 @@ public class LoginActivity extends Activity {
         process_ui();
     }
 
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        if(mHandler == null)
+            mHandler = new MyHandler();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        cancel_progressdialog();
+
+        if(mHandler != null)
+        {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
+
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+    }
+
+    // -----------
+
+    @Override
+    public void onBackPressed()
+    {
+        // super.onBackPressed();
+
+        cancel_progressdialog();
+
+        // ------------------------
+        AlertDialog.Builder b = new AlertDialog.Builder(LoginActivity.this);
+        b.setIcon(R.drawable.ic_dialog_alert_holo_light);
+        b.setTitle(Html.fromHtml("<font color='#465dbf'>Exit</font>"));
+        b.setMessage("是否要離開FiWoRDC App");
+        b.setPositiveButton(("離開"), new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick( DialogInterface dialog, int which)
+            {
+                System.gc();
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
+
+        b.setNegativeButton(("取消"), new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick( DialogInterface arg0, int arg1)
+            {
+                // i_back_key_count = 0;
+
+                arg0.dismiss();
+            }
+        });
+        b.show();
+    }
+
 
     private void process_ui() {
 
-        edtAccount =(EditText) findViewById(R.id.editAccount);
-        edtPassword =(EditText) findViewById(R.id.editPassword);
+        edtAccount = (EditText) findViewById(R.id.editAccount);
+        edtPassword = (EditText) findViewById(R.id.editPassword);
 
-        fd =  new FiwoServerSetting(LoginActivity.this);
-        fd.setTitle("伺服器設置");
+        fd = new FiwoServerSetting(LoginActivity.this);
+        //fd.setTitle("伺服器設置");
+        fd.setTitle(Html.fromHtml("<font color='#465dbf'>伺服器設置</font>"));
+
         fd.requestWindowFeature(Window.FEATURE_LEFT_ICON);
         fd.setDialogResult(new FiwoServerSetting.OnMyDialogResult() {
-               public void finish(String FiWoAddr, String result) {
-                                   // now you can use the 'result' on your activity
-                   sFiWoSvrAddr = FiWoAddr;
-                   sDomain = result;
-                   if(mHandler != null) {
-                       Message msg1 = new Message();
-                       msg1.what = appdefine.MSG_UPDATE_SPINNER;
-                       mHandler.sendMessage(msg1);
-                   }
+            public void finish(String FiWoAddr, String result) {
+                // now you can use the 'result' on your activity
+                sFiWoSvrAddr = FiWoAddr;
+                sDomain = result;
 
-               }
-       });
+                if (mHandler != null) {
+                    Message msg1 = new Message();
+                    msg1.what = appdefine.MSG_UPDATE_SPINNER;
+                    mHandler.sendMessage(msg1);
+                }
+
+            }
+        });
 
         spinner = (Spinner) findViewById(R.id.locationSpinner);
 
         btn_info = (ImageButton) findViewById(R.id.imgBtn_Info);
-        btn_info.setOnClickListener(new OnClickListener()
-        {
+        btn_info.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick( View v)
-            {
+            public void onClick(View v) {
                 process_show_help();
             }
         });
 
         btn_network = (ImageButton) findViewById(R.id.imgBtn_Network);
-        btn_network.setOnClickListener(new OnClickListener()
-        {
+        btn_network.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick( View v)
-            {
+            public void onClick(View v) {
                 process_setting_Network();
             }
         });
 
-        btn_login = (Button) findViewById(R.id.loginbutton);
-        btn_login.setOnClickListener(new OnClickListener()
-        {
+        btn_reload = (ImageButton) findViewById(R.id.ImgBtnReload);
+        btn_reload.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick( View v)
-            {
+            public void onClick(View v) {
+                process_setting_Reload();
+            }
+        });
+
+        btn_login = (Button) findViewById(R.id.loginbutton);
+        btn_login.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 process_login();
             }
         });
         btn_login.setEnabled(false);
-    }
 
+
+    }
 
     private void process_login() {
 
@@ -195,6 +282,7 @@ public class LoginActivity extends Activity {
             jsonLoginInfo.put("account", edtAccount.getText().toString());
             jsonLoginInfo.put("password",edtPassword.getText().toString());
             jsonLoginInfo.put("domain", spinner.getSelectedItem().toString());
+            jsonLoginInfo.put("FiWoAddress", sFiWoSvrAddr);
             i.putExtra("logininfo", jsonLoginInfo.toString());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -221,14 +309,14 @@ public class LoginActivity extends Activity {
         String result = "";
         try {
             response = client.execute(httpPost);
-            HttpEntity resEntity = response.getEntity();
-            if (resEntity != null) {
-                result = EntityUtils.toString(resEntity);
-
-                arrClient = ParseClientInfotoAry(result);
-            }
             int nstate_code = response.getStatusLine().getStatusCode();
             if ((200 == nstate_code) || 204 == nstate_code) {
+                HttpEntity resEntity = response.getEntity();
+                if (resEntity != null) {
+                    result = EntityUtils.toString(resEntity);
+
+                    arrClient = ParseClientInfotoAry(result);
+                }
                 if(mHandler != null)
                 {
                     Message msg1 = new Message();
@@ -271,8 +359,8 @@ public class LoginActivity extends Activity {
         JSONArray jarysource = null;
         try {
             jinfo = new JSONObject();
-            jinfo.put("ip", "192.168.1.155");
-            jinfo.put("mac", "00-1A-A0-97-14-29");
+            jinfo.put("ip", getIPAddress(this));
+            jinfo.put("mac", getMacAddress(this));
             jarysource = new JSONArray();
             jarysource.put(jinfo);
 
@@ -298,23 +386,17 @@ public class LoginActivity extends Activity {
         soapDatainJsonObject = XML.toJSONObject(sClientInfo);
 
         return soapDatainJsonObject.getJSONObject("deskpools").getJSONArray("deskpool");
-            /*
-        for(int i=0; i<arr.length(); i++){
-            JSONObject o = arr.getJSONObject(i);
-            System.out.println(o);
-        }
-        */
-        //jObjectDomains = jObject.getJSONObject("domains");
-           // jObjectDomain = jObjectDomains.getJSONObject("domain");
-            //sObjectDomainName = jObjectDomain.getString("domainName");
 
-
-
-        }
+     }
     protected void process_show_help()
     {
         AlertDialog.Builder b = new AlertDialog.Builder(LoginActivity.this);
-        b.setTitle(getResources().getString(R.string.dlg_login_info));
+
+        String sTitle="<font color='#465dbf'>";
+        sTitle += getString(R.string.dlg_login_info);
+        sTitle += "</font>";
+        b.setTitle(Html.fromHtml(sTitle));
+
         b.setMessage(getResources().getString(R.string.dlg_login_info_content));
         b.setIcon(R.drawable.icon_title_help);
         b.setNegativeButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener()
@@ -341,10 +423,20 @@ public class LoginActivity extends Activity {
 
        // fd.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
         //set up button
+        ImageButton imgbtnReload = (ImageButton) findViewById(R.id.ImgBtnReload);
+        imgbtnReload.setVisibility(View.INVISIBLE);
+
 
         fd.show();
         fd.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
         fd.resetUIStatus();
+    }
+
+    protected void process_setting_Reload() {
+
+        show_process_dialog(false);
+        Thread thread = new Thread(ThreadDomain);
+        thread.start();
     }
 
     private Runnable ThreadGetClientInfo = new Runnable() {
@@ -354,7 +446,76 @@ public class LoginActivity extends Activity {
 
         }
     };
+    private Runnable ThreadDomain = new Runnable() {
+        public void run() {
+            // 運行網路連線的程式
+            String r = sendHttpGetDomain();
+            sDomain = r;
 
+            if(mHandler != null)
+            {
+                Message msg1 = new Message();
+                msg1.what = appdefine.MSG_LOGIN_GET_DOMAIN;
+                mHandler.sendMessage(msg1);
+            }
+        }
+    };
+    private String sendHttpGetDomain() {
+        String strUrl = "http://";
+        strUrl += sFiWoSvrAddr;
+        strUrl += ":8080/FiWo/Interface/rest/deskpool/domain";
+        HttpClient client = new DefaultHttpClient();
+        HttpGet request = new HttpGet(strUrl);
+        HttpResponse response ;
+        JSONObject soapDatainJsonObject = null;
+        String result = "";
+        try {
+            response = client.execute(request);
+
+            HttpEntity resEntity = response.getEntity();
+
+            if (resEntity != null) {
+                result = EntityUtils.toString(resEntity);
+                soapDatainJsonObject = XML.toJSONObject(result);
+            }
+            Log.d("Response of GET request", response.toString());
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return soapDatainJsonObject.toString();
+    }
+    private  void updateDomainControl() {
+        Spinner Callbackspinner = (Spinner) findViewById(R.id.locationSpinner);
+        Callbackspinner.setAdapter(null);
+
+        JSONObject jObjectDomains = null;
+        JSONObject jObjectDomain  = null;
+        String sObjectDomainName = null;
+        try {
+            JSONObject jObject = new JSONObject(sDomain);
+            jObjectDomains = jObject.getJSONObject("domains");
+            jObjectDomain = jObjectDomains.getJSONObject("domain");
+            sObjectDomainName = jObjectDomain.getString("domainName");
+
+            List<String> list;
+            list = new ArrayList<String>();
+            list.add(sObjectDomainName);
+            ArrayAdapter<String> adapterLocationType = new ArrayAdapter<String>(getApplicationContext(),
+                    R.layout.login_spinner_item, list);
+            adapterLocationType.setDropDownViewResource(R.layout.login_spinner_pop_item);
+            spinner.setAdapter(adapterLocationType);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     private void cancel_progressdialog()
     {
         if(pDialog != null)
@@ -381,6 +542,36 @@ public class LoginActivity extends Activity {
         pDialog.show();
     }
 
+    public static String getMacAddress(Context context) {
+        WifiManager wifiMan = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        return wifiInf.getMacAddress();
+    }
+
+    public static String getIPAddress(Context context) {
+        WifiManager wifiMan = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInf = wifiMan.getConnectionInfo();
+        long ip = wifiInf.getIpAddress();
+        if( ip != 0 )
+            return String.format( "%d.%d.%d.%d",
+                    (ip & 0xff),
+                    (ip >> 8 & 0xff),
+                    (ip >> 16 & 0xff),
+                    (ip >> 24 & 0xff));
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()) {
+                        return inetAddress.getHostAddress().toString();
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+        return "0.0.0.0";
+    }
     // -----------------------------------------------------------
     private class MyHandler extends Handler
     {
@@ -389,29 +580,11 @@ public class LoginActivity extends Activity {
             switch( msg.what)
             {
                 case appdefine.MSG_UPDATE_SPINNER: {
-                    Spinner Callbackspinner = (Spinner) findViewById(R.id.locationSpinner);
-                    Callbackspinner.setAdapter(null);
 
-                    JSONObject jObjectDomains = null;
-                    JSONObject jObjectDomain  = null;
-                    String sObjectDomainName = null;
-                    try {
-                        JSONObject jObject = new JSONObject(sDomain);
-                        jObjectDomains = jObject.getJSONObject("domains");
-                        jObjectDomain = jObjectDomains.getJSONObject("domain");
-                        sObjectDomainName = jObjectDomain.getString("domainName");
+                    ImageButton imgBtnReload = (ImageButton) findViewById(R.id.ImgBtnReload);
+                    imgBtnReload.setVisibility(View.VISIBLE);
 
-                        List<String> list;
-                        list = new ArrayList<String>();
-                        list.add(sObjectDomainName);
-                        ArrayAdapter<String> adapterLocationType = new ArrayAdapter<String>(getApplicationContext(),
-                                R.layout.login_spinner_item, list);
-                        adapterLocationType.setDropDownViewResource(R.layout.login_spinner_pop_item);
-                        spinner.setAdapter(adapterLocationType);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    updateDomainControl();
                     EditText editAccount = (EditText) findViewById(R.id.editAccount);
                     EditText editPwd = (EditText) findViewById(R.id.editPassword);
                     String sAccount = editAccount.getText().toString();
@@ -458,9 +631,13 @@ public class LoginActivity extends Activity {
                 }
                 break;
                 case appdefine.MSG_LOGIN_GET_CLIENT_SUCCESS: {
-
                     goto_next_activity(DesktopPoolActivity.class);
                     cancel_progressdialog();
+                }
+                break;
+                case appdefine.MSG_LOGIN_GET_DOMAIN:{
+                    cancel_progressdialog();
+                    updateDomainControl();
                 }
                 break;
                 default:

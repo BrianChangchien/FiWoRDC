@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:installLocation="auto"
 	package="com.foxconn.fiwordc"
 	android:versionCode="3"
-	android:versionName="e83f97b" >
+	android:versionName="e83f97b">
 
 	<uses-sdk
 		android:targetSdkVersion="21"
@@ -40,6 +41,7 @@
 					<data android:scheme="file" android:host="*" android:pathPattern=".*\\.rdp" />        					
 					<data android:mimeType="*/*" />
 				</intent-filter>
+
 			</activity>
 
 			<!-- Session request handler activity - used for search and internally to start sessions -->

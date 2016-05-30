@@ -75,21 +75,33 @@
                 android:textSize="8dp"
                 android:text="Aa12345678"
                 android:background="#ffffff" />
-            <Spinner
-                android:id="@+id/locationSpinner"
-                android:layout_width="115dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="335dp"
-                android:layout_marginTop="0dp"
-                android:spinnerMode="dialog"
-                android:textColor="@android:color/black"
-                android:textSize="11dp"
-                style="@android:style/Widget.Holo.Light.Spinner"/>
-
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Spinner
+                    android:id="@+id/locationSpinner"
+                    android:layout_width="117dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="335dp"
+                    android:spinnerMode="dialog"
+                    android:textColor="@android:color/black"
+                    android:textSize="11dp"
+                    style="@android:style/Widget.Holo.Light.Spinner"/>
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="6dp"
+                    android:id="@+id/ImgBtnReload"
+                    android:src="@drawable/icon_refresh"
+                    android:background="#00000000"
+                    android:visibility="invisible"
+                     />
+            </LinearLayout>l
             <Button
-                android:layout_width="115dp"
+                android:layout_width="110dp"
                 android:layout_height="20dp"
-                android:layout_marginLeft="335dp"
+                android:layout_marginLeft="338dp"
                 android:layout_marginTop="5dp"
                 android:text="Login"
                 android:textColor="#ffffff"

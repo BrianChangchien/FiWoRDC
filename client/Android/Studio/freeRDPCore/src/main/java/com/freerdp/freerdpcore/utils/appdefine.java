@@ -14,7 +14,13 @@ public class appdefine {
     public static final int MSG_CONNECT_RESPONSE = 0x100017;
     public static final int MSG_CONNECT_NON_RESPONSE = 0x100018;
 
-    public static final int MSG_LOGIN_AUTH_ERROR = 0x100019;
-    public static final int MSG_LOGIN_GET_CLIENT_SUCCESS = 0x10001A;
-    public static final int MSG_LOGIN_GET_CLIENT_ERROR = 0x10001B;
+    public static final int MSG_LOGIN_AUTH_ERROR = 0x101001;
+    public static final int MSG_LOGIN_GET_CLIENT_SUCCESS = 0x101002;
+    public static final int MSG_LOGIN_GET_CLIENT_ERROR = 0x101003;
+    public static final int MSG_LOGIN_GET_DOMAIN = 0x101004;
+
+    public static final int MSG_DESKPOOL_GET_PUBLIC_SUCCESS = 0x102001;
+    public static final int MSG_DESKPOOL_GET_PUBLIC_NON_CONTENT = 0x102002;
+    public static final int MSG_DESKPOOL_GET_PUBLIC_ERROR = 0x102003;
+    public static final int MSG_DESKPOOL_GET_PUBLIC_CLIENT = 0x102004;
 }
