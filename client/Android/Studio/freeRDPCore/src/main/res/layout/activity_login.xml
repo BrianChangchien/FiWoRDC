@@ -51,7 +51,7 @@
 
             <EditText
                 android:layout_width="110dp"
-                android:layout_height="wrap_content"
+                android:layout_height="15dp"
                 android:id="@+id/editAccount"
                 android:layout_marginLeft="340dp"
                 android:layout_marginTop="100dp"
@@ -60,21 +60,22 @@
                 android:hint="Account"
                 android:text="Anson"
                 android:textSize="8dp"
-                android:background="#ffffff" />
+                android:background="@drawable/edittext_border"
+                />
 
             <EditText
                 android:layout_width="110dp"
-                android:layout_height="wrap_content"
+                android:layout_height="15dp"
                 android:inputType="textPassword"
                 android:ems="10"
                 android:id="@+id/editPassword"
                 android:layout_marginLeft="340dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:hint="Password"
                 android:textSize="8dp"
                 android:text="Aa12345678"
-                android:background="#ffffff" />
+                android:background="@drawable/edittext_border"/>
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -87,22 +88,23 @@
                     android:spinnerMode="dialog"
                     android:textColor="@android:color/black"
                     android:textSize="11dp"
-                    style="@android:style/Widget.Holo.Light.Spinner"/>
+                    style="@android:style/Widget.Holo.Light.Spinner"
+                    android:layout_marginTop="-7dp" />
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="0dp"
                     android:id="@+id/ImgBtnReload"
                     android:src="@drawable/icon_refresh"
                     android:background="#00000000"
                     android:visibility="invisible"
                      />
-            </LinearLayout>l
+            </LinearLayout>
             <Button
                 android:layout_width="110dp"
                 android:layout_height="20dp"
-                android:layout_marginLeft="338dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginLeft="339dp"
+                android:layout_marginTop="-2dp"
                 android:text="Login"
                 android:textColor="#ffffff"
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"

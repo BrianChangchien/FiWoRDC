@@ -1,5 +1,6 @@
 package com.freerdp.freerdpcore.presentation;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -49,7 +50,8 @@ public class FiwoServerSetting extends Dialog implements
         private static int period = 15000;  //1s
 
         public Activity c;
-        private static MyHandler mHandler;
+        private static MyHandler mHandler ;
+        private
         OnMyDialogResult mDialogResult; // the callback
 
         public FiwoServerSetting(Activity a) {

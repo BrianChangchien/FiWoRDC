@@ -554,7 +554,7 @@ public class SessionActivity extends ActionBarActivity implements
 			/*sName += "(";
 			sName += jsonConnect.getString("ip");
 			sName += ")";*/
-			setTitle(sName);
+			setTitle("FiWo Remote Desktop Client");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -870,6 +870,7 @@ public class SessionActivity extends ActionBarActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.session_menu, menu);
+
 		return true;
 	}
 
