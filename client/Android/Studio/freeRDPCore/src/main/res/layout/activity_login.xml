@@ -58,7 +58,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:editable="true"
                 android:hint="Account"
-                android:text="Anson"
+                android:text="Fiwotest01"
                 android:textSize="8dp"
                 android:background="@drawable/edittext_border"
                 />
@@ -74,7 +74,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:hint="Password"
                 android:textSize="8dp"
-                android:text="Aa12345678"
+                android:text="Foxconn123"
                 android:background="@drawable/edittext_border"/>
             <LinearLayout
                 android:orientation="horizontal"

@@ -76,6 +76,7 @@ import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -293,14 +294,15 @@ public class LoginActivity extends Activity {
     private String sendHttpPostClient() {
         String strUrl = "http://";
         strUrl += sFiWoSvrAddr;
-        strUrl += ":8080/FiWo/Interface/rest/deskpool/client/all";
+        strUrl += ":80/FiWo/Interface/rest/deskpool/client/all";
         HttpClient client = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(strUrl);
-        httpPost.setHeader("Content-type", "application/json");
+        httpPost.addHeader("Content-type", "application/json");
+        httpPost.addHeader("charset", HTTP.UTF_8);
         String sPostData = GetPostclientJson();
 
         try {
-            httpPost.setEntity(new StringEntity(sPostData));
+            httpPost.setEntity(new StringEntity(sPostData, HTTP.UTF_8));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -313,7 +315,7 @@ public class LoginActivity extends Activity {
             if ((200 == nstate_code) || 204 == nstate_code) {
                 HttpEntity resEntity = response.getEntity();
                 if (resEntity != null) {
-                    result = EntityUtils.toString(resEntity);
+                    result = EntityUtils.toString(resEntity, "UTF-8");
 
                     arrClient = ParseClientInfotoAry(result);
                 }
@@ -463,7 +465,7 @@ public class LoginActivity extends Activity {
     private String sendHttpGetDomain() {
         String strUrl = "http://";
         strUrl += sFiWoSvrAddr;
-        strUrl += ":8080/FiWo/Interface/rest/deskpool/domain";
+        strUrl += ":80/FiWo/Interface/rest/deskpool/domain";
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(strUrl);
         HttpResponse response ;

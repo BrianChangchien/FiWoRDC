@@ -3,8 +3,10 @@ package com.freerdp.freerdpcore.presentation;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
@@ -45,12 +47,17 @@ import org.json.XML;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class DesktopPoolActivity extends Activity {
 
     private ImageButton btn_info, btn_logout;
     private View PreviousView, DefaultView;
+
     private String sPreviousViewType;
     private JSONArray arrDeskpools;
     private JSONObject jsonLoginInfo, jsonPublicDeskpool, jsonPublicInstanceInfo;
@@ -58,6 +65,17 @@ public class DesktopPoolActivity extends Activity {
     String[] web;
     int[] imageId;
     private static MyHandler mHandler;
+    private int ndefaultConfirmPos = -1;
+    private int nPreviousViewPos = -1;
+    private boolean bTimerTrigger = false;
+    private Timer mTimer = null;
+    private TimerTask mTimerTask = null;
+    private static int count = 0;
+    private boolean isPause = false;
+    private boolean isStop = true;
+
+    private static int delay = 30000;  //1s
+    private static int period = 30000;  //1s
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -128,36 +146,60 @@ public class DesktopPoolActivity extends Activity {
     private void process_grid_deskpool() {
         web = new String[arrDeskpools.length()];
         imageId = new int[arrDeskpools.length()];
+        String sDefaultConfirmID="" ;
+
+        try {
+            String sFiWoIP = jsonLoginInfo.getString("FiWoAddress");
+            String sAccount = jsonLoginInfo.getString("account");
+            SharedPreferences keyValues = getSharedPreferences(("DEFAULT_COMFIRM"), Context.MODE_APPEND);
+            sDefaultConfirmID = keyValues.getString(sFiWoIP+":"+sAccount,null);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         for (int i = 0; i < arrDeskpools.length(); i++) {
             JSONObject jsondeskpool = null;
             try {
                 jsondeskpool = arrDeskpools.getJSONObject(i);
                 String sName;
+                String sID;
                 String sPoolType;
                 if (jsondeskpool.getString("type").equals("private")) {
                     sName = jsondeskpool.getString("osName");
+                    sID = jsondeskpool.getString("id");
                     sPoolType = "<私有虛擬機>";
                     sName += "\n";
                     sName += sPoolType + "\n";
                     sName += "(" + jsondeskpool.getString("container") + ")";
-                    imageId[i] = R.drawable.icon_pool_not_default;
+                    if (sID.equals(sDefaultConfirmID)) {
+                        imageId[i] = R.drawable.icon_pool_default;
+                        ndefaultConfirmPos = i;
+                    }else
+                        imageId[i] = R.drawable.icon_pool_not_default;
+
                 } else {
                     sName = jsondeskpool.getString("name");
+                    sID = jsondeskpool.getString("id");
                     sPoolType = "<公有桌面池>";
                     sName += "\n";
                     sName += sPoolType + "\n";
                     sName += "(" + jsondeskpool.getString("container") + ")";
-                    imageId[i] = R.drawable.icon_public_not_default;
+                    if (sID.equals(sDefaultConfirmID)){
+                        imageId[i] = R.drawable.icon_public_default;
+                        ndefaultConfirmPos = i;
+                    }
+                    else
+                        imageId[i] = R.drawable.icon_public_not_default;
+
                 }
                 web[i] = sName;
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
         }
 
-        DeskpoolGrid adapter = new DeskpoolGrid(DesktopPoolActivity.this, web, imageId);
+        DeskpoolGrid adapter = new DeskpoolGrid(DesktopPoolActivity.this, web, imageId, Integer.toString(ndefaultConfirmPos));
         grid = (GridView) findViewById(R.id.gridView_deskpool);
         grid.setAdapter(adapter);
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -170,7 +212,7 @@ public class DesktopPoolActivity extends Activity {
                 ImageView iv = (ImageView) view.findViewById(R.id.grid_single_image);
                 try {
                     JSONObject jsondeskpool = arrDeskpools.getJSONObject(position);
-                    if (view.equals(DefaultView)) {
+                    if (position == ndefaultConfirmPos) {
                         if (jsondeskpool.getString("type").equals("private"))
                             iv.setImageResource(R.drawable.icon_pool_default_select);
                         else
@@ -186,7 +228,7 @@ public class DesktopPoolActivity extends Activity {
                     btnConnect.setVisibility(View.VISIBLE);
                     if (null != PreviousView) {
                         ImageView ivPre = (ImageView) PreviousView.findViewById(R.id.grid_single_image);
-                        if (PreviousView.equals(DefaultView)) {
+                        if (nPreviousViewPos == ndefaultConfirmPos) {
                             if (sPreviousViewType.equals("private"))
                                 ivPre.setImageResource(R.drawable.icon_pool_default);
                             else
@@ -201,6 +243,7 @@ public class DesktopPoolActivity extends Activity {
                         btnConnectPre.setVisibility(View.INVISIBLE);
                     }
                     PreviousView = view;
+                    nPreviousViewPos = position;
                     sPreviousViewType = jsondeskpool.getString("type");
 
                 } catch (JSONException e) {
@@ -214,26 +257,90 @@ public class DesktopPoolActivity extends Activity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 //Toast.makeText(DesktopPoolActivity.this, "You Long Clicked at " + web[+position], Toast.LENGTH_SHORT).show();
+
                 if (null != DefaultView) {
+
+                    if (0 == ndefaultConfirmPos)
+                        DefaultView = grid.getChildAt(ndefaultConfirmPos);
+
                     ImageView ivPre = (ImageView) DefaultView.findViewById(R.id.grid_single_image);
                     try {
-                        JSONObject jsondeskpool = arrDeskpools.getJSONObject(position);
+                        JSONObject jsondeskpool = arrDeskpools.getJSONObject(ndefaultConfirmPos);
                         if (jsondeskpool.getString("type").equals("private"))
                             ivPre.setImageResource(R.drawable.icon_pool_not_default);
                         else
                             ivPre.setImageResource(R.drawable.icon_public_not_default);
+
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     if (view.equals(DefaultView)) {
+                        bTimerTrigger = false;
+                        stopTimer();
                         DefaultView = null;
+                        ResetDefaultCommitInstance();
+                        ndefaultConfirmPos = -1;
                         return true;
                     }
                 }
+                SaveDefaultCommitInstance(view, position);
                 DefaultView = view;
+                ndefaultConfirmPos = position;
+                bTimerTrigger = true;
+                stopTimer();
+                //startTimer();
                 return false;
             }
         });
+        if (-1 != ndefaultConfirmPos) {
+            bTimerTrigger = true;
+           // startTimer();
+        }
+    }
+    private void ResetDefaultCommitInstance() {
+        SharedPreferences keyValues = getSharedPreferences(("DEFAULT_COMFIRM"), Context.MODE_APPEND);
+        SharedPreferences.Editor keyValuesEditor = keyValues.edit();
+        try {
+            String sFiWoIP = jsonLoginInfo.getString("FiWoAddress");
+            String sAccount = jsonLoginInfo.getString("account");
+            Map<String, String> aMap = new HashMap<String, String>();
+            aMap.put(sFiWoIP + ":" + sAccount, "");
+            for (String s : aMap.keySet()) {
+                keyValuesEditor.putString(s, aMap.get(s));
+            }
+            keyValuesEditor.commit();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    private void SaveDefaultCommitInstance(View view, int pos) {
+        SharedPreferences keyValues = getSharedPreferences(("DEFAULT_COMFIRM"), Context.MODE_APPEND);
+        SharedPreferences.Editor keyValuesEditor = keyValues.edit();
+        try {
+            String sFiWoIP = jsonLoginInfo.getString("FiWoAddress");
+            String sAccount = jsonLoginInfo.getString("account");
+            JSONObject jsondeskpool = arrDeskpools.getJSONObject(pos);
+            String sId = jsondeskpool.getString("id");
+
+            Map<String, String> aMap = new HashMap<String, String>();
+            if (view.equals(DefaultView))
+                aMap.put(sFiWoIP + ":" + sAccount, "");
+            else
+                aMap.put(sFiWoIP + ":" + sAccount, sId);
+
+
+            for (String s : aMap.keySet()) {
+                keyValuesEditor.putString(s, aMap.get(s));
+            }
+            keyValuesEditor.commit();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void SetDefaultDeskpoolGridView(View v){
+        DefaultView = v;
     }
 
     private void process_setting_Logout() {
@@ -270,6 +377,11 @@ public class DesktopPoolActivity extends Activity {
         arrDeskpools = arrClient;
         i.putExtra("deskpool", arrDeskpools.toString());
         */
+        if (true == bTimerTrigger) {
+            bTimerTrigger = false;
+            stopTimer();
+        }
+
         JSONObject jsonConnectObj = arrDeskpools.getJSONObject(nPos);
         if (jsonConnectObj.getString("type").equals("private")) {
             String refStr = "";
@@ -327,7 +439,7 @@ public class DesktopPoolActivity extends Activity {
         }
         String strUrl = "http://";
         strUrl += sFiWoAddressIP;
-        strUrl += ":8080/FiWo/Interface/rest/deskpool/";
+        strUrl += ":80/FiWo/Interface/rest/deskpool/";
         strUrl += sPublicDeskpoolID;
         strUrl += "/client/public/ip";
         HttpClient client = new DefaultHttpClient();
@@ -404,6 +516,42 @@ public class DesktopPoolActivity extends Activity {
         }
 
         return jDomains.toString();
+    }
+    private void startTimer(){
+        if (mTimer == null) {
+            mTimer = new Timer();
+        }
+        if (mTimerTask == null) {
+            mTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    if (ndefaultConfirmPos != -1){
+                        try {
+                            process_connect_deskpool_vm(ndefaultConfirmPos);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    count++;
+                }
+            };
+        }
+        if(mTimer != null && mTimerTask != null )
+            mTimer.schedule(mTimerTask, delay, period);
+    }
+
+    private void stopTimer() {
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+
+        if (mTimerTask != null) {
+            mTimerTask.cancel();
+            mTimerTask = null;
+        }
+        count = 0;
+
     }
     // -----------------------------------------------------------
     private class MyHandler extends Handler

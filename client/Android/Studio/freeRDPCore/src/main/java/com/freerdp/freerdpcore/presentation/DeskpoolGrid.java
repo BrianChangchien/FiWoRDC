@@ -26,10 +26,12 @@ public class DeskpoolGrid extends BaseAdapter{
     private Context mContext;
     private final String[] web;
     private final int[] Imageid;
-    public DeskpoolGrid(Context c,String[] web,int[] Imageid ) {
+    private final String sDefaultViewPos;
+    public DeskpoolGrid(Context c,String[] web,int[] Imageid, String sdefaultPos ) {
         mContext = c;
         this.Imageid = Imageid;
         this.web = web;
+        sDefaultViewPos = sdefaultPos;
     }
 
     @Override
@@ -63,6 +65,12 @@ public class DeskpoolGrid extends BaseAdapter{
 
             textView.setText(web[position]);
             imageView.setImageResource(Imageid[position]);
+
+            if (sDefaultViewPos.equals(Integer.toString(position)) ){
+                DesktopPoolActivity dpActivity = (DesktopPoolActivity)mContext;
+                dpActivity.SetDefaultDeskpoolGridView(grid);
+            }
+
         } else {
             grid = (View) convertView;
         }

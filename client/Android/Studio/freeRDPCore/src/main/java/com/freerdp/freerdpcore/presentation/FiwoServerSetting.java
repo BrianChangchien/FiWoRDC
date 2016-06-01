@@ -114,7 +114,7 @@ public class FiwoServerSetting extends Dialog implements
     private String sendHttpGetHandShake() {
         String strUrl = "http://";
         strUrl += sFiwoServerAddr;
-        strUrl += ":8080/FiWo/Interface/rest/version";
+        strUrl += ":80/FiWo/Interface/rest/version";
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(strUrl);
         HttpResponse response ;
@@ -148,7 +148,7 @@ public class FiwoServerSetting extends Dialog implements
     private String sendHttpGetDomain() {
         String strUrl = "http://";
         strUrl += sFiwoServerAddr;
-        strUrl += ":8080/FiWo/Interface/rest/deskpool/domain";
+        strUrl += ":80/FiWo/Interface/rest/deskpool/domain";
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(strUrl);
         HttpResponse response ;
@@ -201,7 +201,7 @@ public class FiwoServerSetting extends Dialog implements
     private void process_ui() {
 
         editFiwoServerAddr = (EditText) findViewById(R.id.editFIWOaddress);
-        editFiwoServerAddr.setText("192.168.1.55");
+        editFiwoServerAddr.setText("10.67.54.15");
         bConnected=false;
 
         btnCheckConnect = (Button) findViewById(R.id.btnFiwoServerCheckConnect);
