@@ -69,6 +69,31 @@ public class FiwoServerSetting extends Dialog implements
         process_ui();
     }
 
+    protected void onResume()
+    {
+        if(mHandler == null)
+            mHandler = new MyHandler();
+    }
+
+    protected void onPause()
+    {
+        if(mHandler != null)
+        {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
+        System.gc();
+    }
+
+    protected void onDestory(){
+        if(mHandler != null)
+        {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
+        System.gc();
+    }
+
     private Runnable ThreadHandshake = new Runnable() {
         public void run() {
             // 運行網路連線的程式

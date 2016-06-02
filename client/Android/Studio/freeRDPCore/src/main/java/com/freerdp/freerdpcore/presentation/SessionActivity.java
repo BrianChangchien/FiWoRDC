@@ -732,6 +732,7 @@ public class SessionActivity extends ActionBarActivity implements
 		progressDialog.setTitle(title);
 		progressDialog.setMessage(getResources().getText(
 				R.string.dlg_msg_connecting));
+		/*
 		progressDialog.setButton(ProgressDialog.BUTTON_NEGATIVE, "Cancel",
 				new DialogInterface.OnClickListener() {
 					@Override
@@ -741,6 +742,7 @@ public class SessionActivity extends ActionBarActivity implements
 					}
 				});
 		progressDialog.setCancelable(false);
+		*/
 		progressDialog.show();
 
 		Thread thread = new Thread(new Runnable() {

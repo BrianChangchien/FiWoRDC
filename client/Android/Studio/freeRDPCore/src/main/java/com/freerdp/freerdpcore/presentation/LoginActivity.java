@@ -120,6 +120,10 @@ public class LoginActivity extends Activity {
 
         if(mHandler == null)
             mHandler = new MyHandler();
+
+        if (fd != null) {
+            fd.onResume();
+        }
     }
 
     @Override
@@ -134,13 +138,17 @@ public class LoginActivity extends Activity {
             mHandler.removeCallbacksAndMessages(null);
             mHandler = null;
         }
-
+        if (fd != null) {
+            fd.onPause();
+        }
     }
 
     @Override
     protected void onStop()
     {
         super.onStop();
+        if (fd != null)
+            fd.onDestory();
     }
 
     // -----------

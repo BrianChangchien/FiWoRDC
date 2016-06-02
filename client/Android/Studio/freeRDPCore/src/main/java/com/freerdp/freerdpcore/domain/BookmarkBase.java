@@ -186,7 +186,7 @@ public class BookmarkBase implements Parcelable, Cloneable {
 		}
 				
 		private void init() {
-			resolution = AUTOMATIC;
+			resolution = FITSCREEN;
 			colors = 16;
 			width = 0;
 			height = 0;

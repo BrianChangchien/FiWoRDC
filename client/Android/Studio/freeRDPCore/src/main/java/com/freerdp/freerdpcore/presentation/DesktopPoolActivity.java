@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -57,7 +58,7 @@ public class DesktopPoolActivity extends Activity {
 
     private ImageButton btn_info, btn_logout;
     private View PreviousView, DefaultView;
-
+    private static final String TAG = "FiWo.DesktopPoolActivity";
     private String sPreviousViewType;
     private JSONArray arrDeskpools;
     private JSONObject jsonLoginInfo, jsonPublicDeskpool, jsonPublicInstanceInfo;
@@ -121,7 +122,48 @@ public class DesktopPoolActivity extends Activity {
         process_ui();
 
     }
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if(mHandler == null)
+            mHandler = new MyHandler();
+    }
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        if(mHandler != null)
+        {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
+        System.gc();
+    }
 
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        if(mHandler != null)
+        {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
+        System.gc();
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        if(mHandler != null)
+        {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
+        System.gc();
+    }
     private void process_ui() {
 
         btn_info = (ImageButton) findViewById(R.id.imgBtn_deskpool_info);
@@ -226,7 +268,8 @@ public class DesktopPoolActivity extends Activity {
 
                     Button btnConnect = (Button) view.findViewById(R.id.grid_btn_connect);
                     btnConnect.setVisibility(View.VISIBLE);
-                    if (null != PreviousView) {
+                    if (-1 != nPreviousViewPos) {
+                        PreviousView = grid.getChildAt(nPreviousViewPos);
                         ImageView ivPre = (ImageView) PreviousView.findViewById(R.id.grid_single_image);
                         if (nPreviousViewPos == ndefaultConfirmPos) {
                             if (sPreviousViewType.equals("private"))
@@ -242,7 +285,7 @@ public class DesktopPoolActivity extends Activity {
                         Button btnConnectPre = (Button) PreviousView.findViewById(R.id.grid_btn_connect);
                         btnConnectPre.setVisibility(View.INVISIBLE);
                     }
-                    PreviousView = view;
+                    //PreviousView = view;
                     nPreviousViewPos = position;
                     sPreviousViewType = jsondeskpool.getString("type");
 
@@ -258,11 +301,8 @@ public class DesktopPoolActivity extends Activity {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 //Toast.makeText(DesktopPoolActivity.this, "You Long Clicked at " + web[+position], Toast.LENGTH_SHORT).show();
 
-                if (null != DefaultView) {
-
-                    if (0 == ndefaultConfirmPos)
-                        DefaultView = grid.getChildAt(ndefaultConfirmPos);
-
+                if (-1 != ndefaultConfirmPos) {
+                    DefaultView = grid.getChildAt(ndefaultConfirmPos);
                     ImageView ivPre = (ImageView) DefaultView.findViewById(R.id.grid_single_image);
                     try {
                         JSONObject jsondeskpool = arrDeskpools.getJSONObject(ndefaultConfirmPos);
@@ -275,7 +315,7 @@ public class DesktopPoolActivity extends Activity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    if (view.equals(DefaultView)) {
+                    if (ndefaultConfirmPos == position) {
                         bTimerTrigger = false;
                         stopTimer();
                         DefaultView = null;
@@ -285,7 +325,7 @@ public class DesktopPoolActivity extends Activity {
                     }
                 }
                 SaveDefaultCommitInstance(view, position);
-                DefaultView = view;
+                //DefaultView = view;
                 ndefaultConfirmPos = position;
                 bTimerTrigger = true;
                 stopTimer();
@@ -324,7 +364,7 @@ public class DesktopPoolActivity extends Activity {
             String sId = jsondeskpool.getString("id");
 
             Map<String, String> aMap = new HashMap<String, String>();
-            if (view.equals(DefaultView))
+            if (ndefaultConfirmPos == pos)
                 aMap.put(sFiWoIP + ":" + sAccount, "");
             else
                 aMap.put(sFiWoIP + ":" + sAccount, sId);
@@ -558,6 +598,12 @@ public class DesktopPoolActivity extends Activity {
     {
         public void handleMessage( Message msg)
         {
+            if(DesktopPoolActivity.this.isFinishing())
+            {
+                Log.e(TAG, "the activity is finish. so bypass.");
+                //return;
+            }
+            super.handleMessage(msg);
             switch( msg.what)
             {
                 case appdefine.MSG_DESKPOOL_GET_PUBLIC_CLIENT: {
@@ -583,16 +629,17 @@ public class DesktopPoolActivity extends Activity {
                             arg0.dismiss();
                         }
                     });
+
                     b.show();
                 }
                 break;
                 case appdefine.MSG_DESKPOOL_GET_PUBLIC_NON_CONTENT: {
                     //();
-                    AlertDialog.Builder b = new AlertDialog.Builder(DesktopPoolActivity.this);
-                    b.setIcon(R.drawable.ic_dialog_alert_holo_light);
-                    b.setTitle("警告");
-                    b.setMessage("無可用虛擬機器, 請聯絡管理者");
-                    b.setNegativeButton("確定" , new DialogInterface.OnClickListener()
+                    AlertDialog.Builder b1 = new AlertDialog.Builder(DesktopPoolActivity.this);
+                    b1.setIcon(R.drawable.ic_dialog_alert_holo_light);
+                    b1.setTitle("警告");
+                    b1.setMessage("無可用虛擬機器, 請聯絡管理者");
+                    b1.setNegativeButton("確定" , new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick( DialogInterface arg0, int arg1)
@@ -600,7 +647,8 @@ public class DesktopPoolActivity extends Activity {
                             arg0.dismiss();
                         }
                     });
-                    b.show();
+                    Log.v(TAG, "AlertDialog NON_CONTENT");
+                    b1.show();
                 }
                 break;
                 default:
