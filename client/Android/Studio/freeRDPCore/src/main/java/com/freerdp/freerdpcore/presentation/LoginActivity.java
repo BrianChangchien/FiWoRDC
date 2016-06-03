@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -31,6 +32,7 @@ import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -61,6 +63,7 @@ import com.freerdp.freerdpcore.domain.ConnectionReference;
 import com.freerdp.freerdpcore.domain.PlaceholderBookmark;
 import com.freerdp.freerdpcore.domain.QuickConnectBookmark;
 import com.freerdp.freerdpcore.utils.BookmarkArrayAdapter;
+import com.freerdp.freerdpcore.utils.GlobelSetting;
 import com.freerdp.freerdpcore.utils.SeparatedListAdapter;
 import com.freerdp.freerdpcore.utils.appdefine;
 
@@ -101,7 +104,23 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width=dm.widthPixels;
+        int height=dm.heightPixels;
+        int dens=dm.densityDpi;
+        double wi=(double)width/(double)dens;
+        double hi=(double)height/(double)dens;
+        double x = Math.pow(wi,2);
+        double y = Math.pow(hi,2);
+        double screenInches = Math.sqrt(x+y);
+
+        if (screenInches < 6.0)
+            setContentView(R.layout.activity_login_under6);
+        else
+            setContentView(R.layout.activity_login);
+
         if(mHandler == null)
             mHandler = new MyHandler();
         process_ui();
@@ -170,6 +189,12 @@ public class LoginActivity extends Activity {
             @Override
             public void onClick( DialogInterface dialog, int which)
             {
+                SharedPreferences keyValues = context.getSharedPreferences(("FiWoServer"), Context.MODE_PRIVATE);
+                SharedPreferences.Editor keyValuesEditor = keyValues.edit();
+                keyValuesEditor.clear();
+                keyValuesEditor.putString("ip", "");
+                keyValuesEditor.commit();
+
                 System.gc();
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
@@ -302,7 +327,9 @@ public class LoginActivity extends Activity {
     private String sendHttpPostClient() {
         String strUrl = "http://";
         strUrl += sFiWoSvrAddr;
-        strUrl += ":80/FiWo/Interface/rest/deskpool/client/all";
+        strUrl += ":";
+        strUrl += GlobelSetting.sServicePort;
+        strUrl += "/FiWo/Interface/rest/deskpool/client/all";
         HttpClient client = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(strUrl);
         httpPost.addHeader("Content-type", "application/json");
@@ -473,7 +500,9 @@ public class LoginActivity extends Activity {
     private String sendHttpGetDomain() {
         String strUrl = "http://";
         strUrl += sFiWoSvrAddr;
-        strUrl += ":80/FiWo/Interface/rest/deskpool/domain";
+        strUrl += ":";
+        strUrl += GlobelSetting.sServicePort;
+        strUrl += "/FiWo/Interface/rest/deskpool/domain";
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(strUrl);
         HttpResponse response ;

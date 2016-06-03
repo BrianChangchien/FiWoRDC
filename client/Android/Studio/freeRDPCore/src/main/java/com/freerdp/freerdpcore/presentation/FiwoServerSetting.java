@@ -4,6 +4,8 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.freerdp.freerdpcore.R;
+import com.freerdp.freerdpcore.utils.GlobelSetting;
 import com.freerdp.freerdpcore.utils.appdefine;
 
 import org.apache.http.HttpEntity;
@@ -49,7 +52,7 @@ public class FiwoServerSetting extends Dialog implements
         private static int delay = 15000;  //1s
         private static int period = 15000;  //1s
 
-        public Activity c;
+        public Activity context;
         private static MyHandler mHandler ;
         private
         OnMyDialogResult mDialogResult; // the callback
@@ -57,7 +60,7 @@ public class FiwoServerSetting extends Dialog implements
         public FiwoServerSetting(Activity a) {
             super(a);
             // TODO Auto-generated constructor stub
-            this.c = a;
+            this.context = a;
         }
 
     @Override
@@ -139,7 +142,9 @@ public class FiwoServerSetting extends Dialog implements
     private String sendHttpGetHandShake() {
         String strUrl = "http://";
         strUrl += sFiwoServerAddr;
-        strUrl += ":80/FiWo/Interface/rest/version";
+        strUrl += ":";
+        strUrl += GlobelSetting.sServicePort;
+        strUrl += "/FiWo/Interface/rest/version";
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(strUrl);
         HttpResponse response ;
@@ -173,7 +178,9 @@ public class FiwoServerSetting extends Dialog implements
     private String sendHttpGetDomain() {
         String strUrl = "http://";
         strUrl += sFiwoServerAddr;
-        strUrl += ":80/FiWo/Interface/rest/deskpool/domain";
+        strUrl += ":";
+        strUrl += GlobelSetting.sServicePort;
+        strUrl += "/FiWo/Interface/rest/deskpool/domain";
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(strUrl);
         HttpResponse response ;
@@ -225,8 +232,10 @@ public class FiwoServerSetting extends Dialog implements
 
     private void process_ui() {
 
+        SharedPreferences userDetails = context.getSharedPreferences("FiWoServer", Context.MODE_PRIVATE);
+        String FiwoIP = userDetails.getString("ip", "");
         editFiwoServerAddr = (EditText) findViewById(R.id.editFIWOaddress);
-        editFiwoServerAddr.setText("10.67.54.15");
+        editFiwoServerAddr.setText(FiwoIP);
         bConnected=false;
 
         btnCheckConnect = (Button) findViewById(R.id.btnFiwoServerCheckConnect);
@@ -340,6 +349,12 @@ public class FiwoServerSetting extends Dialog implements
             switch( msg.what)
             {
                 case appdefine.MSG_SHOW_CONNECTING: {
+                    SharedPreferences keyValues = context.getSharedPreferences(("FiWoServer"), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor keyValuesEditor = keyValues.edit();
+                    keyValuesEditor.clear();
+                    keyValuesEditor.putString("ip", sFiwoServerAddr);
+                    keyValuesEditor.commit();
+
                     ImageView imgStatus = (ImageView) findViewById(R.id.ImgViewFiwoServerConnectStatus);
                     imgStatus.setImageResource(R.drawable.icon_connect);
                     imgStatus.setVisibility(View.VISIBLE);

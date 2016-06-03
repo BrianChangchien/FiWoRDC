@@ -27,6 +27,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.freerdp.freerdpcore.R;
+import com.freerdp.freerdpcore.utils.GlobelSetting;
 import com.freerdp.freerdpcore.utils.appdefine;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -333,6 +334,7 @@ public class DesktopPoolActivity extends Activity {
                 return false;
             }
         });
+
         if (-1 != ndefaultConfirmPos) {
             bTimerTrigger = true;
            // startTimer();
@@ -479,7 +481,9 @@ public class DesktopPoolActivity extends Activity {
         }
         String strUrl = "http://";
         strUrl += sFiWoAddressIP;
-        strUrl += ":80/FiWo/Interface/rest/deskpool/";
+        strUrl += ":";
+        strUrl += GlobelSetting.sServicePort;
+        strUrl += "/FiWo/Interface/rest/deskpool/";
         strUrl += sPublicDeskpoolID;
         strUrl += "/client/public/ip";
         HttpClient client = new DefaultHttpClient();
