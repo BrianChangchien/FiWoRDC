@@ -13,6 +13,7 @@ public class appdefine {
     public static final int MSG_UPDATE_SPINNER = 0x100016;
     public static final int MSG_CONNECT_RESPONSE = 0x100017;
     public static final int MSG_CONNECT_NON_RESPONSE = 0x100018;
+    public static final int MSG_NEED_UPGRADE = 0x100019;
 
     public static final int MSG_LOGIN_AUTH_ERROR = 0x101001;
     public static final int MSG_LOGIN_GET_CLIENT_SUCCESS = 0x101002;

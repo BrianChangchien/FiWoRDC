@@ -69,7 +69,6 @@ public class DesktopPoolActivity extends Activity {
     private static MyHandler mHandler;
     private int ndefaultConfirmPos = -1;
     private int nPreviousViewPos = -1;
-    private boolean bTimerTrigger = false;
     private Timer mTimer = null;
     private TimerTask mTimerTask = null;
     private static int count = 0;
@@ -82,28 +81,7 @@ public class DesktopPoolActivity extends Activity {
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    /*
-    String[] web = {
-            "Google",
-            "Github",
-            "Instagram",
-            "Facebook",
-            "Twitter",
-            "Vimeo",
-            "WordPress",
-            "Youtube"
-    } ;
-    int[] imageId = {
-            R.drawable.help_icon,
-            R.drawable.help_icon,
-            R.drawable.help_icon,
-            R.drawable.help_icon,
-            R.drawable.help_icon,
-            R.drawable.help_icon,
-            R.drawable.help_icon,
-            R.drawable.help_icon
-    };
-   */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,6 +121,17 @@ public class DesktopPoolActivity extends Activity {
     }
 
     @Override
+    protected void onStop()
+    {
+        super.onStop();
+        if(mHandler != null)
+        {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
+        }
+        System.gc();
+    }
+    @Override
     public void onDestroy()
     {
         super.onDestroy();
@@ -154,17 +143,6 @@ public class DesktopPoolActivity extends Activity {
         System.gc();
     }
 
-    @Override
-    protected void onStop()
-    {
-        super.onStop();
-        if(mHandler != null)
-        {
-            mHandler.removeCallbacksAndMessages(null);
-            mHandler = null;
-        }
-        System.gc();
-    }
     private void process_ui() {
 
         btn_info = (ImageButton) findViewById(R.id.imgBtn_deskpool_info);
@@ -317,7 +295,6 @@ public class DesktopPoolActivity extends Activity {
                         e.printStackTrace();
                     }
                     if (ndefaultConfirmPos == position) {
-                        bTimerTrigger = false;
                         stopTimer();
                         DefaultView = null;
                         ResetDefaultCommitInstance();
@@ -328,16 +305,13 @@ public class DesktopPoolActivity extends Activity {
                 SaveDefaultCommitInstance(view, position);
                 //DefaultView = view;
                 ndefaultConfirmPos = position;
-                bTimerTrigger = true;
                 stopTimer();
-                //startTimer();
                 return false;
             }
         });
 
         if (-1 != ndefaultConfirmPos) {
-            bTimerTrigger = true;
-           // startTimer();
+            startTimer();
         }
     }
     private void ResetDefaultCommitInstance() {
@@ -419,10 +393,7 @@ public class DesktopPoolActivity extends Activity {
         arrDeskpools = arrClient;
         i.putExtra("deskpool", arrDeskpools.toString());
         */
-        if (true == bTimerTrigger) {
-            bTimerTrigger = false;
-            stopTimer();
-        }
+        stopTimer();
 
         JSONObject jsonConnectObj = arrDeskpools.getJSONObject(nPos);
         if (jsonConnectObj.getString("type").equals("private")) {

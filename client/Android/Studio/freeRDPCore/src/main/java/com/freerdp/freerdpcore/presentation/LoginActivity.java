@@ -293,6 +293,56 @@ public class LoginActivity extends Activity {
         thread.start();
 
     }
+    protected void process_show_help()
+    {
+        AlertDialog.Builder b = new AlertDialog.Builder(LoginActivity.this);
+
+        String sTitle="<font color='#465dbf'>";
+        sTitle += getString(R.string.dlg_login_info);
+        sTitle += "</font>";
+        b.setTitle(Html.fromHtml(sTitle));
+
+        b.setMessage(getResources().getString(R.string.dlg_login_info_content));
+        b.setIcon(R.drawable.icon_title_help);
+        b.setNegativeButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick( DialogInterface arg0, int arg1)
+            {
+                arg0.dismiss();
+            }
+        });
+        b.show();
+
+    }
+
+    protected void process_setting_Network() {
+        // custom dialog
+        /*
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_LEFT_ICON);
+        dialog.setContentView(R.layout.activity_fiwo_server_setting);
+        dialog.setTitle("伺服器設置");
+        dialog.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
+        dialog.setCancelable(true);*/
+
+        // fd.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
+        //set up button
+        ImageButton imgbtnReload = (ImageButton) findViewById(R.id.ImgBtnReload);
+        imgbtnReload.setVisibility(View.INVISIBLE);
+
+
+        fd.show();
+        fd.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
+        fd.resetUIStatus();
+    }
+
+    protected void process_setting_Reload() {
+
+        show_process_dialog(false);
+        Thread thread = new Thread(ThreadDomain);
+        thread.start();
+    }
 
     private void goto_next_activity(Class<?> cls) {
         Intent i = new Intent();
@@ -302,15 +352,7 @@ public class LoginActivity extends Activity {
             i.putExtra("deskpool", arrDeskpools.toString());
         }
         i.setClass(context, cls);
-    /*i.putExtra(appdefine.b_activity_auto_restore_last_4_channel_in_view, false);
-        i.putExtra(appdefine.b_OnePlayerView, true);
-        i.putExtra(appdefine.b_autoload_channel_at_first_view, true);
 
-        i.putExtra("URL1", m_edt1.getText().toString());
-        i.putExtra("URL2", m_edt2.getText().toString());
-        i.putExtra("URL3", m_edt3.getText().toString());
-        i.putExtra("URL4", m_edt4.getText().toString());
-        */
         try {
             JSONObject jsonLoginInfo = new JSONObject();
             jsonLoginInfo.put("account", edtAccount.getText().toString());
@@ -425,56 +467,6 @@ public class LoginActivity extends Activity {
         return soapDatainJsonObject.getJSONObject("deskpools").getJSONArray("deskpool");
 
      }
-    protected void process_show_help()
-    {
-        AlertDialog.Builder b = new AlertDialog.Builder(LoginActivity.this);
-
-        String sTitle="<font color='#465dbf'>";
-        sTitle += getString(R.string.dlg_login_info);
-        sTitle += "</font>";
-        b.setTitle(Html.fromHtml(sTitle));
-
-        b.setMessage(getResources().getString(R.string.dlg_login_info_content));
-        b.setIcon(R.drawable.icon_title_help);
-        b.setNegativeButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick( DialogInterface arg0, int arg1)
-                    {
-                        arg0.dismiss();
-                    }
-                });
-        b.show();
-
-    }
-
-    protected void process_setting_Network() {
-        // custom dialog
-        /*
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_LEFT_ICON);
-        dialog.setContentView(R.layout.activity_fiwo_server_setting);
-        dialog.setTitle("伺服器設置");
-        dialog.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
-        dialog.setCancelable(true);*/
-
-       // fd.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
-        //set up button
-        ImageButton imgbtnReload = (ImageButton) findViewById(R.id.ImgBtnReload);
-        imgbtnReload.setVisibility(View.INVISIBLE);
-
-
-        fd.show();
-        fd.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
-        fd.resetUIStatus();
-    }
-
-    protected void process_setting_Reload() {
-
-        show_process_dialog(false);
-        Thread thread = new Thread(ThreadDomain);
-        thread.start();
-    }
 
     private Runnable ThreadGetClientInfo = new Runnable() {
         public void run() {
@@ -555,14 +547,6 @@ public class LoginActivity extends Activity {
             e.printStackTrace();
         }
     }
-    private void cancel_progressdialog()
-    {
-        if(pDialog != null)
-        {
-            pDialog.dismiss();
-            pDialog = null;
-        }
-    }
 
     public void show_process_dialog( boolean b_can_cancel)
     {
@@ -580,6 +564,16 @@ public class LoginActivity extends Activity {
         pDialog.setCancelable(b_can_cancel);
         pDialog.show();
     }
+
+    private void cancel_progressdialog()
+    {
+        if(pDialog != null)
+        {
+            pDialog.dismiss();
+            pDialog = null;
+        }
+    }
+
 
     public static String getMacAddress(Context context) {
         WifiManager wifiMan = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);

@@ -2,10 +2,20 @@ package com.freerdp.freerdpcore.presentation;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,6 +40,7 @@ import org.json.JSONObject;
 import org.json.XML;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -54,10 +65,13 @@ public class FiwoServerSetting extends Dialog implements
 
         public Activity context;
         private static MyHandler mHandler ;
-        private
-        OnMyDialogResult mDialogResult; // the callback
+        private OnMyDialogResult mDialogResult; // the callback
 
-        public FiwoServerSetting(Activity a) {
+        private DownloadManager mDownloadManager;
+        private long enqueueId;
+        private BroadcastReceiver  mBroadcastReceiver;
+
+    public FiwoServerSetting(Activity a) {
             super(a);
             // TODO Auto-generated constructor stub
             this.context = a;
@@ -70,6 +84,11 @@ public class FiwoServerSetting extends Dialog implements
         if(mHandler == null)
             mHandler = new MyHandler();
         process_ui();
+        try {
+            process_app_update();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void onResume()
@@ -94,30 +113,98 @@ public class FiwoServerSetting extends Dialog implements
             mHandler.removeCallbacksAndMessages(null);
             mHandler = null;
         }
+
         System.gc();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.btnFiwoServerCheckConnect) {
+            process_press_checkconnect();
+        }else  if (id == R.id.btnFiwoServerFinish) {
+            process_press_finish();
+        }
+    }
+
+    public void resetUIStatus(){
+        ImageView imgStatus = (ImageView) findViewById(R.id.ImgViewFiwoServerConnectStatus);
+        imgStatus.setVisibility(View.INVISIBLE);
+        btnFinish.setBackgroundResource(R.drawable.btn_bg_grey);
+        btnFinish.setEnabled(false);
+    }
+
+    public void setDialogResult(OnMyDialogResult dialogResult){
+        mDialogResult = dialogResult;
+    }
+
+    private void process_ui() {
+
+        SharedPreferences userDetails = context.getSharedPreferences("FiWoServer", Context.MODE_PRIVATE);
+        String FiwoIP = userDetails.getString("ip", "");
+        editFiwoServerAddr = (EditText) findViewById(R.id.editFIWOaddress);
+        editFiwoServerAddr.setText(FiwoIP);
+        bConnected=false;
+
+        btnCheckConnect = (Button) findViewById(R.id.btnFiwoServerCheckConnect);
+        btnFinish = (Button) findViewById(R.id.btnFiwoServerFinish);
+        btnCheckConnect.setOnClickListener(this);
+        btnFinish.setOnClickListener(this);
+        btnFinish.setEnabled(false);
+        // sFiwoServerAddr = editFiwoServerAddr.getText().toString();
+    }
+
+    private void process_app_update() throws PackageManager.NameNotFoundException {
+        PackageInfo pinfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+        int versionNumber = pinfo.versionCode;
+        String versionName = pinfo.versionName;
+    }
+
+    private void process_press_checkconnect() {
+        sFiwoServerAddr = editFiwoServerAddr.getText().toString();
+        if (sFiwoServerAddr.equals("")) {
+            editFiwoServerAddr.setError("請輸入FiWo Server Address");
+            return;
+        }
+        bHandshakeResponse = false;
+        startTimer();
+        show_process_dialog("Loading", false);
+        Thread thread = new Thread(ThreadHandshake);
+        thread.start();
+        //editFiwoServerAddr.setError("請輸入FiWo Server Address");
+    }
+
+    private void process_press_finish() {
+        show_process_dialog("Loading", false);
+        stopTimer();
+        Thread thread = new Thread(ThreadDomain);
+        thread.start();
+
+    }
+    public void downloadNewVersion() {
+        mDownloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        String sAPKDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS) + "/FiWoRDC.apk";
+        File f = new File(sAPKDownloadPath);
+        Boolean deleted = f.delete();
+        // apkDownloadUrl 是 apk 的下载地址
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse("http://10.67.54.15/FiWo_Agent/FiWoRDC.apk"));
+
+        request.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, "FiWoRDC.apk");
+        // 获取下载队列 id
+        enqueueId = mDownloadManager.enqueue(request);
+    }
+    private void promptInstall(Uri data) {
+        Intent promptInstall = new Intent(Intent.ACTION_VIEW)
+                .setDataAndType(data, "application/vnd.android.package-archive");
+        // FLAG_ACTIVITY_NEW_TASK 可以保证安装成功时可以正常打开 app
+        promptInstall.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(promptInstall);
     }
 
     private Runnable ThreadHandshake = new Runnable() {
         public void run() {
             // 運行網路連線的程式
             String r = sendHttpGetHandShake();
-
-            if (r.equals("200") || r.equals("201")) {
-                if(mHandler != null)
-                {
-                    Message msg1 = new Message();
-                    msg1.what = appdefine.MSG_SHOW_CONNECTING;
-                    mHandler.sendMessage(msg1);
-                }
-            }
-            else
-            {
-                if(mHandler != null) {
-                    Message msg1 = new Message();
-                    msg1.what = appdefine.MSG_CONNECTION_FAIL;
-                    mHandler.sendMessage(msg1);
-                }
-            }
 
             if (r != null)
                 Log.d("Connected", r);
@@ -144,7 +231,7 @@ public class FiwoServerSetting extends Dialog implements
         strUrl += sFiwoServerAddr;
         strUrl += ":";
         strUrl += GlobelSetting.sServicePort;
-        strUrl += "/FiWo/Interface/rest/version";
+        strUrl += "/FiWo/Interface/rest/deskpool/app";
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(strUrl);
         HttpResponse response ;
@@ -161,6 +248,26 @@ public class FiwoServerSetting extends Dialog implements
                 result = EntityUtils.toString(resEntity);
             }
             status_code = response.getStatusLine().getStatusCode();
+            if (status_code == 200) {
+                if(mHandler != null)
+                {
+                    Message msg1 = new Message();
+                    if (false)
+                        msg1.what = appdefine.MSG_NEED_UPGRADE;
+                    else
+                        msg1.what = appdefine.MSG_SHOW_CONNECTING;
+
+                    mHandler.sendMessage(msg1);
+                }
+            }
+            else
+            {
+                if(mHandler != null) {
+                    Message msg1 = new Message();
+                    msg1.what = appdefine.MSG_CONNECTION_FAIL;
+                    mHandler.sendMessage(msg1);
+                }
+            }
             Log.d("Response of GET request", response.toString());
         } catch (ClientProtocolException e) {
             // TODO Auto-generated catch block
@@ -209,75 +316,8 @@ public class FiwoServerSetting extends Dialog implements
         bHandshakeResponse = true;
         return soapDatainJsonObject.toString();
     }
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        if (id == R.id.btnFiwoServerCheckConnect) {
-            process_press_checkconnect();
-        }else  if (id == R.id.btnFiwoServerFinish) {
-            process_press_finish();
-        }
-    }
 
-    public void resetUIStatus(){
-        ImageView imgStatus = (ImageView) findViewById(R.id.ImgViewFiwoServerConnectStatus);
-        imgStatus.setVisibility(View.INVISIBLE);
-        btnFinish.setBackgroundResource(R.drawable.btn_bg_grey);
-        btnFinish.setEnabled(false);
-    }
-
-    public void setDialogResult(OnMyDialogResult dialogResult){
-        mDialogResult = dialogResult;
-    }
-
-    private void process_ui() {
-
-        SharedPreferences userDetails = context.getSharedPreferences("FiWoServer", Context.MODE_PRIVATE);
-        String FiwoIP = userDetails.getString("ip", "");
-        editFiwoServerAddr = (EditText) findViewById(R.id.editFIWOaddress);
-        editFiwoServerAddr.setText(FiwoIP);
-        bConnected=false;
-
-        btnCheckConnect = (Button) findViewById(R.id.btnFiwoServerCheckConnect);
-        btnFinish = (Button) findViewById(R.id.btnFiwoServerFinish);
-        btnCheckConnect.setOnClickListener(this);
-        btnFinish.setOnClickListener(this);
-        btnFinish.setEnabled(false);
-        // sFiwoServerAddr = editFiwoServerAddr.getText().toString();
-    }
-
-
-    private void process_press_checkconnect() {
-        sFiwoServerAddr = editFiwoServerAddr.getText().toString();
-        if (sFiwoServerAddr.equals("")) {
-            editFiwoServerAddr.setError("請輸入FiWo Server Address");
-            return;
-        }
-        bHandshakeResponse = false;
-        startTimer();
-        show_process_dialog(false);
-        Thread thread = new Thread(ThreadHandshake);
-        thread.start();
-        //editFiwoServerAddr.setError("請輸入FiWo Server Address");
-    }
-
-    private void process_press_finish() {
-        show_process_dialog(false);
-        stopTimer();
-        Thread thread = new Thread(ThreadDomain);
-        thread.start();
-
-    }
-    private void cancel_progressdialog()
-    {
-        if(pDialog != null)
-        {
-            pDialog.dismiss();
-            pDialog = null;
-        }
-    }
-
-    public void show_process_dialog( boolean b_can_cancel)
+    public void show_process_dialog(String sMessage, boolean b_can_cancel)
     {
         if(pDialog != null && pDialog.isShowing())
             return;
@@ -287,11 +327,20 @@ public class FiwoServerSetting extends Dialog implements
             pDialog = new ProgressDialog(this.getContext());
 
             pDialog.setTitle("");
-            pDialog.setMessage("Loading");
+            pDialog.setMessage(sMessage);
         }
 
         pDialog.setCancelable(b_can_cancel);
         pDialog.show();
+    }
+
+    private void cancel_progressdialog()
+    {
+        if(pDialog != null)
+        {
+            pDialog.dismiss();
+            pDialog = null;
+        }
     }
 
     private void startTimer(){
@@ -365,6 +414,54 @@ public class FiwoServerSetting extends Dialog implements
 
                 }
                     break;
+                case appdefine.MSG_NEED_UPGRADE:{
+                    stopTimer();
+                    cancel_progressdialog();
+                    AlertDialog.Builder b = new AlertDialog.Builder(context);
+                    b.setIcon(R.drawable.ic_dialog_alert_holo_light);
+                    b.setTitle("更新");
+                    b.setMessage("有新版本的FiWoRDC, 請按更新鍵完成更新");
+                    b.setNegativeButton("確定" , new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick( DialogInterface arg0, int arg1)
+                        {
+                           downloadNewVersion();
+                           show_process_dialog("Downloading", false);
+                           mBroadcastReceiver  = new BroadcastReceiver() {
+                                @Override
+                                public void onReceive(Context context, Intent intent) {
+                                    cancel_progressdialog();
+                                    long downloadCompletedId = intent.getLongExtra(
+                                            DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+                                    // 检查是否是自己的下载队列 id, 有可能是其他应用的
+                                    if (enqueueId != downloadCompletedId) {
+                                        return;
+                                    }
+                                    DownloadManager.Query query = new DownloadManager.Query();
+                                    query.setFilterById(enqueueId);
+                                    Cursor c = mDownloadManager.query(query);
+                                    if (c.moveToFirst()) {
+                                        context.unregisterReceiver(mBroadcastReceiver);
+
+                                        int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                                        // 下载失败也会返回这个广播，所以要判断下是否真的下载成功
+                                        if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+                                            // 获取下载好的 apk 路径
+                                            String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+
+                                            // 提示用户安装
+                                            promptInstall(Uri.parse("file://" + uriString));
+                                        }
+                                    }
+                                }
+                            };
+                            context.registerReceiver(mBroadcastReceiver, new IntentFilter( DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+                        }
+                    });
+                    b.show();
+                }
+                break;
                 case appdefine.MSG_CONNECTION_FAIL: {
                     stopTimer();
                     ImageView imgStatus = (ImageView) findViewById(R.id.ImgViewFiwoServerConnectStatus);

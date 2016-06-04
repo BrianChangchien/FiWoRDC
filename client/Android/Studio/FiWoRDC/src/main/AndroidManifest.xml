@@ -4,8 +4,8 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:installLocation="auto"
 	package="com.foxconn.fiwordc"
-	android:versionCode="3"
-	android:versionName="e83f97b">
+	android:versionCode="1"
+	android:versionName="1.0.0">
 
 	<uses-sdk
 		android:targetSdkVersion="21"

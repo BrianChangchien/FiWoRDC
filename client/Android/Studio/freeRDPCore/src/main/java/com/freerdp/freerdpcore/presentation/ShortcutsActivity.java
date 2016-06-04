@@ -132,7 +132,7 @@ public class ShortcutsActivity extends ListActivity {
     		 	        Intent intent = new Intent();
     		 	        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
     		 	        intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, label);
-    		 	        Parcelable iconResource = Intent.ShortcutIconResource.fromContext(paramContext, R.drawable.icon_launcher_freerdp);
+    		 	        Parcelable iconResource = Intent.ShortcutIconResource.fromContext(paramContext, R.drawable.icon_launcher_fiwordc);
     		 	        intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconResource);
 
     		 	        // Now, return the result to the launcher
