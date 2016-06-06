@@ -21,7 +21,7 @@ Thumbs.db
 # OSX files
 .DS_Store
 
-# Eclipse project files
+# Eclipse project fileszzzzz
 .classpath
 .project
 
@@ -35,3 +35,4 @@ build/
 #NDK
 obj/
 jniLibs/
+

@@ -30,7 +30,7 @@
             android:layout_marginTop="10dp">
             <EditText
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="30dp"
                 android:id="@+id/editFIWOaddress"
                 android:gravity="center"
                 android:textColor="#000"
@@ -40,6 +40,7 @@
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="20"
+                android:textSize="12dp"
                 android:layout_marginTop="5dp" />
              <ImageView
                  android:layout_width="wrap_content"

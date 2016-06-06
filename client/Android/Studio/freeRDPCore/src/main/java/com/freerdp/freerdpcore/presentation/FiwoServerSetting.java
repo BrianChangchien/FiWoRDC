@@ -70,6 +70,7 @@ public class FiwoServerSetting extends Dialog implements
         private DownloadManager mDownloadManager;
         private long enqueueId;
         private BroadcastReceiver  mBroadcastReceiver;
+        private String sFiWoUpgradePath, sFiWoUpgradeName, sFiWoAppVersion;
 
     public FiwoServerSetting(Activity a) {
             super(a);
@@ -84,11 +85,13 @@ public class FiwoServerSetting extends Dialog implements
         if(mHandler == null)
             mHandler = new MyHandler();
         process_ui();
+        /*
         try {
             process_app_update();
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+        */
     }
 
     protected void onResume()
@@ -154,12 +157,6 @@ public class FiwoServerSetting extends Dialog implements
         // sFiwoServerAddr = editFiwoServerAddr.getText().toString();
     }
 
-    private void process_app_update() throws PackageManager.NameNotFoundException {
-        PackageInfo pinfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-        int versionNumber = pinfo.versionCode;
-        String versionName = pinfo.versionName;
-    }
-
     private void process_press_checkconnect() {
         sFiwoServerAddr = editFiwoServerAddr.getText().toString();
         if (sFiwoServerAddr.equals("")) {
@@ -183,13 +180,13 @@ public class FiwoServerSetting extends Dialog implements
     }
     public void downloadNewVersion() {
         mDownloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        String sAPKDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS) + "/FiWoRDC.apk";
+        String sAPKDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS) + "/" + sFiWoUpgradeName;
         File f = new File(sAPKDownloadPath);
         Boolean deleted = f.delete();
         // apkDownloadUrl 是 apk 的下载地址
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse("http://10.67.54.15/FiWo_Agent/FiWoRDC.apk"));
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(sFiWoUpgradePath+sFiWoUpgradeName));
 
-        request.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, "FiWoRDC.apk");
+        request.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, sFiWoUpgradeName);
         // 获取下载队列 id
         enqueueId = mDownloadManager.enqueue(request);
     }
@@ -204,11 +201,7 @@ public class FiwoServerSetting extends Dialog implements
     private Runnable ThreadHandshake = new Runnable() {
         public void run() {
             // 運行網路連線的程式
-            String r = sendHttpGetHandShake();
-
-            if (r != null)
-                Log.d("Connected", r);
-
+            sendHttpGetHandShake();
         }
     };
 
@@ -237,22 +230,36 @@ public class FiwoServerSetting extends Dialog implements
         HttpResponse response ;
         String result = "";
         JSONObject soapDatainJsonObject = null;
-        int status_code = 0;
+        String sCurrentVersionName = null;
 
         try {
-            response = client.execute(request);
+            PackageInfo pinfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            sCurrentVersionName = pinfo.versionName;
+        }
+        catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
+        int status_code = 0;
+        try {
+            response = client.execute(request);
             HttpEntity resEntity = response.getEntity();
 
             if (resEntity != null) {
                 result = EntityUtils.toString(resEntity);
+                soapDatainJsonObject = XML.toJSONObject(result);
+                JSONObject jsonAPPInfo = soapDatainJsonObject.getJSONObject("deskpoolApp");
+                sFiWoUpgradeName = jsonAPPInfo.getString("androidName");
+                sFiWoAppVersion = jsonAPPInfo.getString("androidVersion");
+                sFiWoUpgradePath = jsonAPPInfo.getString("baseUrl");
             }
             status_code = response.getStatusLine().getStatusCode();
             if (status_code == 200) {
                 if(mHandler != null)
                 {
                     Message msg1 = new Message();
-                    if (false)
+                    boolean bUpdrade = GlobelSetting.compareVersionNames(sCurrentVersionName, sFiWoAppVersion);
+                    if (GlobelSetting.compareVersionNames(sCurrentVersionName, sFiWoAppVersion))
                         msg1.what = appdefine.MSG_NEED_UPGRADE;
                     else
                         msg1.what = appdefine.MSG_SHOW_CONNECTING;
