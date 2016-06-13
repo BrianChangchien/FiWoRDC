@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_bg"
+    android:background="@drawable/desktop_bg"
     tools:context="com.freerdp.freerdpcore.presentation.LoginActivity">
-
 
     <ScrollView
         android:layout_width="match_parent"
@@ -17,7 +16,6 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
             <LinearLayout
                 android:gravity="right"
                 android:orientation="horizontal"
@@ -48,72 +46,107 @@
                     android:layout_marginTop="10dp"
                     android:clickable="true" />
             </LinearLayout>
-
-            <EditText
-                android:layout_width="110dp"
-                android:layout_height="15dp"
-                android:id="@+id/editAccount"
-                android:layout_marginLeft="340dp"
-                android:layout_marginTop="100dp"
-                android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                android:editable="true"
-                android:hint="Account"
-                android:text="Fiwotest01"
-                android:textSize="8dp"
-                android:background="@drawable/edittext_border"
-                />
-
-            <EditText
-                android:layout_width="110dp"
-                android:layout_height="15dp"
-                android:inputType="textPassword"
-                android:ems="10"
-                android:id="@+id/editPassword"
-                android:layout_marginLeft="340dp"
-                android:layout_marginTop="5dp"
-                android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                android:hint="Password"
-                android:textSize="8dp"
-                android:text="Foxconn123"
-                android:background="@drawable/edittext_border"/>
-            <LinearLayout
-                android:orientation="horizontal"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="629dp"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/login_input_bg"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:id="@+id/imageView" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rdc_logo"
+                    android:id="@+id/imageView2"
+                    android:layout_below="@+id/linearLayout"
+                    android:layout_alignRight="@+id/imageView"
+                    android:layout_alignEnd="@+id/imageView"
+                    android:layout_marginRight="122dp"
+                    android:layout_marginEnd="82dp"
+                    android:layout_marginTop="62dp" />
+                <EditText
+                    android:layout_width="220dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/editAccount"
+                    android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                    android:editable="true"
+                    android:hint="Account"
+                    android:text="Fiwotest01"
+                    android:textSize="12dp"
+                    android:background="@drawable/edittext_border"
+                    android:layout_below="@+id/imageView2"
+                    android:layout_alignLeft="@+id/imageView2"
+                    android:layout_alignStart="@+id/imageView2"
+                    android:layout_marginTop="10dp" />
+                <EditText
+                    android:layout_width="220dp"
+                    android:layout_height="30dp"
+                    android:inputType="textPassword"
+                    android:ems="10"
+                    android:id="@+id/editPassword"
+                    android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                    android:hint="Password"
+                    android:textSize="12dp"
+                    android:text="Foxconn123"
+                    android:background="@drawable/edittext_border"
+                    android:layout_below="@+id/editAccount"
+                    android:layout_alignLeft="@+id/editAccount"
+                    android:layout_alignStart="@+id/editAccount"
+                    android:layout_marginTop="10dp" />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/imageView"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/linearLayout">
+
+                </LinearLayout>
+                <Button
+                    android:layout_width="220dp"
+                    android:layout_height="40dp"
+                    android:text="Login"
+                    android:textColor="#ffffff"
+                    android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                    android:textSize="16dp"
+                    android:background="@drawable/btn_bg_grey"
+                    android:id="@+id/loginbutton"
+                    android:enabled="false"
+                    android:layout_below="@+id/locationSpinner"
+                    android:layout_alignLeft="@+id/locationSpinner"
+                    android:layout_alignStart="@+id/locationSpinner"
+                    android:layout_marginTop="20dp" />
+
                 <Spinner
                     android:id="@+id/locationSpinner"
-                    android:layout_width="117dp"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="335dp"
                     android:spinnerMode="dialog"
                     android:textColor="@android:color/black"
-                    android:textSize="11dp"
+                    android:textSize="12dp"
                     style="@android:style/Widget.Holo.Light.Spinner"
-                    android:layout_marginTop="-7dp" />
+                    android:layout_alignTop="@+id/ImgBtnReload"
+                    android:layout_alignLeft="@+id/editPassword"
+                    android:layout_alignStart="@+id/editPassword"
+                    android:layout_marginTop="10dp"/>
+
                 <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="0dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:id="@+id/ImgBtnReload"
                     android:src="@drawable/icon_refresh"
                     android:background="#00000000"
                     android:visibility="invisible"
-                     />
-            </LinearLayout>
-            <Button
-                android:layout_width="110dp"
-                android:layout_height="20dp"
-                android:layout_marginLeft="339dp"
-                android:layout_marginTop="-2dp"
-                android:text="Login"
-                android:textColor="#ffffff"
-                android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                android:textSize="10dp"
-                android:background="@drawable/btn_bg_grey"
-                android:id="@+id/loginbutton"
-                android:enabled="false"/>
-
+                    android:layout_below="@+id/editPassword"
+                    android:layout_toRightOf="@+id/locationSpinner"
+                    android:layout_toEndOf="@+id/locationSpinner" />
+            </RelativeLayout>
         </LinearLayout>
     </ScrollView>
-
 </RelativeLayout>

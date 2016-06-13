@@ -247,19 +247,26 @@ public class FiwoServerSetting extends Dialog implements
 
             if (resEntity != null) {
                 result = EntityUtils.toString(resEntity);
+                status_code = response.getStatusLine().getStatusCode();
+            }
+
+            if (status_code == 200) {
                 soapDatainJsonObject = XML.toJSONObject(result);
                 JSONObject jsonAPPInfo = soapDatainJsonObject.getJSONObject("deskpoolApp");
                 sFiWoUpgradeName = jsonAPPInfo.getString("androidName");
                 sFiWoAppVersion = jsonAPPInfo.getString("androidVersion");
                 sFiWoUpgradePath = jsonAPPInfo.getString("baseUrl");
-            }
-            status_code = response.getStatusLine().getStatusCode();
-            if (status_code == 200) {
+
                 if(mHandler != null)
                 {
                     Message msg1 = new Message();
-                    boolean bUpdrade = GlobelSetting.compareVersionNames(sCurrentVersionName, sFiWoAppVersion);
-                    if (GlobelSetting.compareVersionNames(sCurrentVersionName, sFiWoAppVersion))
+                    boolean bUpdrade = false;
+                    if (sFiWoAppVersion.isEmpty() || sFiWoUpgradeName.isEmpty())
+                        bUpdrade = false;
+                    else
+                        bUpdrade = GlobelSetting.compareVersionNames(sCurrentVersionName, sFiWoAppVersion);
+
+                    if (bUpdrade)
                         msg1.what = appdefine.MSG_NEED_UPGRADE;
                     else
                         msg1.what = appdefine.MSG_SHOW_CONNECTING;
@@ -427,7 +434,7 @@ public class FiwoServerSetting extends Dialog implements
                     AlertDialog.Builder b = new AlertDialog.Builder(context);
                     b.setIcon(R.drawable.ic_dialog_alert_holo_light);
                     b.setTitle("更新");
-                    b.setMessage("有新版本的FiWoRDC, 請按更新鍵完成更新");
+                    b.setMessage("有新版本的FiWoRDC, 請按確定鍵完成更新");
                     b.setNegativeButton("確定" , new DialogInterface.OnClickListener()
                     {
                         @Override
