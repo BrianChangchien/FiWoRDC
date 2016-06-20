@@ -21,7 +21,6 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="#000"
-            android:text="FiWo伺服器位置"
             android:layout_marginTop="1dp" />
          <LinearLayout
             android:orientation="horizontal"
@@ -41,6 +40,10 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="20"
                 android:textSize="12dp"
+                android:lines="1"
+                android:singleLine="true"
+                android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ."
+                android:imeOptions="actionDone"
                 android:layout_marginTop="5dp" />
              <ImageView
                  android:layout_width="wrap_content"
@@ -55,12 +58,10 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="#c1b7b7"
-            android:text="範例 : fiwoserver.cesbg.foxconn, 10.62.8.234"
             android:layout_marginTop="1dp" />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="檢查連線"
             android:textColor="#ffffff"
             android:id="@+id/btnFiwoServerCheckConnect"
             android:background="@drawable/btn_bg_blue"
@@ -70,7 +71,6 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="完成"
             android:gravity="center"
             android:textColor="#ffffff"
             android:id="@+id/btnFiwoServerFinish"

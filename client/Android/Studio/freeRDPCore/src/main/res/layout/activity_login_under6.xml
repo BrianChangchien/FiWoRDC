@@ -58,8 +58,10 @@
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:editable="true"
                 android:hint="Account"
-                android:text="Fiwotest01"
+                android:lines="1"
+                android:singleLine="true"
                 android:textSize="14dp"
+                android:imeOptions="actionDone"
                 android:background="@drawable/edittext_border"
                 />
 
@@ -73,8 +75,10 @@
                 android:layout_marginTop="8dp"
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:hint="Password"
+                android:lines="1"
+                android:singleLine="true"
                 android:textSize="14dp"
-                android:text="Foxconn123"
+                android:imeOptions="actionDone"
                 android:background="@drawable/edittext_border"/>
             <LinearLayout
                 android:orientation="horizontal"

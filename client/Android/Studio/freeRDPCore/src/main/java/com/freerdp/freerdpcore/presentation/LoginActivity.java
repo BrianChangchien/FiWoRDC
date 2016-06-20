@@ -36,6 +36,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -182,9 +183,12 @@ public class LoginActivity extends Activity {
         // ------------------------
         AlertDialog.Builder b = new AlertDialog.Builder(LoginActivity.this);
         b.setIcon(R.drawable.ic_dialog_alert_holo_light);
-        b.setTitle(Html.fromHtml("<font color='#465dbf'>Exit</font>"));
-        b.setMessage("是否要離開FiWoRDC App");
-        b.setPositiveButton(("離開"), new DialogInterface.OnClickListener()
+        String strTitle = "<font color='#465dbf'>";
+        strTitle += this.getString(R.string.exit);
+        strTitle +="</font>";
+        b.setTitle(Html.fromHtml(strTitle));
+        b.setMessage(this.getString(R.string.exit_message));
+        b.setPositiveButton((this.getString(R.string.exit)), new DialogInterface.OnClickListener()
         {
             @Override
             public void onClick( DialogInterface dialog, int which)
@@ -200,7 +204,7 @@ public class LoginActivity extends Activity {
             }
         });
 
-        b.setNegativeButton(("取消"), new DialogInterface.OnClickListener()
+        b.setNegativeButton((this.getString(R.string.cancel)), new DialogInterface.OnClickListener()
         {
             @Override
             public void onClick( DialogInterface arg0, int arg1)
@@ -219,9 +223,53 @@ public class LoginActivity extends Activity {
         edtAccount = (EditText) findViewById(R.id.editAccount);
         edtPassword = (EditText) findViewById(R.id.editPassword);
 
+        edtAccount.setHint(R.string.account);
+        edtAccount.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                // If the event is a key-down event on the "enter" button
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    // Perform action on key press
+
+                    return true;
+                }
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER)) {
+                    // Perform action on key press
+
+                    return true;
+                }
+
+                return false;
+            }
+
+        });
+        edtPassword.setHint(R.string.password);
+        edtPassword.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                // If the event is a key-down event on the "enter" button
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    // Perform action on key press
+
+                    return true;
+                }
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER)) {
+                    // Perform action on key press
+
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
         fd = new FiwoServerSetting(LoginActivity.this);
-        //fd.setTitle("伺服器設置");
-        fd.setTitle(Html.fromHtml("<font color='#465dbf'>伺服器設置</font>"));
+        String strTitle = "<font color='#465dbf'>";
+        strTitle += this.getString(R.string.dlg_network_setting);
+        strTitle +="</font>";
+        fd.setTitle(Html.fromHtml(strTitle));
 
         fd.requestWindowFeature(Window.FEATURE_LEFT_ICON);
         fd.setDialogResult(new FiwoServerSetting.OnMyDialogResult() {
@@ -266,6 +314,7 @@ public class LoginActivity extends Activity {
         });
 
         btn_login = (Button) findViewById(R.id.loginbutton);
+        btn_login.setText(R.string.login);
         btn_login.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -280,11 +329,11 @@ public class LoginActivity extends Activity {
     private void process_login() {
 
         if (edtAccount.getText().toString().equals("")) {
-            edtAccount.setError("請輸入帳號");
+            edtAccount.setError(this.getString(R.string.account_empty));
             return;
         }
         if (edtPassword.getText().toString().equals("")) {
-            edtPassword.setError("請輸入密碼");
+            edtPassword.setError(this.getString(R.string.password_empty));
             return;
         }
 
@@ -302,9 +351,9 @@ public class LoginActivity extends Activity {
         sTitle += "</font>";
         b.setTitle(Html.fromHtml(sTitle));
 
-        b.setMessage(getResources().getString(R.string.dlg_login_info_content));
+        b.setMessage(getString(R.string.dlg_login_info_content));
         b.setIcon(R.drawable.icon_title_help);
-        b.setNegativeButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener()
+        b.setNegativeButton(getString(R.string.ok), new DialogInterface.OnClickListener()
         {
             @Override
             public void onClick( DialogInterface arg0, int arg1)
@@ -558,7 +607,7 @@ public class LoginActivity extends Activity {
             pDialog = new ProgressDialog(this);
 
             pDialog.setTitle("");
-            pDialog.setMessage("Loding");
+            pDialog.setMessage(getString(R.string.loading));
         }
 
         pDialog.setCancelable(b_can_cancel);
@@ -633,9 +682,9 @@ public class LoginActivity extends Activity {
                     // ------------------------
                     AlertDialog.Builder b = new AlertDialog.Builder(LoginActivity.this);
                     b.setIcon(R.drawable.ic_dialog_alert_holo_light);
-                    b.setTitle("警告");
-                    b.setMessage("帳號密碼有誤,請重新輸入");
-                    b.setNegativeButton("確定" , new DialogInterface.OnClickListener()
+                    b.setTitle(getString(R.string.warning));
+                    b.setMessage(getString(R.string.account_password_error));
+                    b.setNegativeButton(getString(R.string.ok) , new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick( DialogInterface arg0, int arg1)
@@ -650,9 +699,9 @@ public class LoginActivity extends Activity {
                     cancel_progressdialog();
                     AlertDialog.Builder b = new AlertDialog.Builder(LoginActivity.this);
                     b.setIcon(R.drawable.ic_dialog_alert_holo_light);
-                    b.setTitle("警告");
-                    b.setMessage("發生未知錯誤,請聯繫管理者");
-                    b.setNegativeButton("確定" , new DialogInterface.OnClickListener()
+                    b.setTitle(getString(R.string.warning));
+                    b.setMessage(getString(R.string.login_unknown_error));
+                    b.setNegativeButton(getString(R.string.ok) , new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick( DialogInterface arg0, int arg1)

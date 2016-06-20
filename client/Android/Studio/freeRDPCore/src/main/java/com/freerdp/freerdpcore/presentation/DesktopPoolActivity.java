@@ -376,7 +376,7 @@ public class DesktopPoolActivity extends Activity {
 
         b.setMessage(getResources().getString(R.string.dlg_deskpool_info_content));
         b.setIcon(R.drawable.icon_title_help);
-        b.setNegativeButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener()
+        b.setNegativeButton(getString(R.string.ok), new DialogInterface.OnClickListener()
         {
             @Override
             public void onClick( DialogInterface arg0, int arg1)
@@ -594,9 +594,9 @@ public class DesktopPoolActivity extends Activity {
                     // ------------------------
                     AlertDialog.Builder b = new AlertDialog.Builder(DesktopPoolActivity.this);
                     b.setIcon(R.drawable.ic_dialog_alert_holo_light);
-                    b.setTitle("警告");
-                    b.setMessage("發生未預知的結果,請聯絡管理者");
-                    b.setNegativeButton("確定" , new DialogInterface.OnClickListener()
+                    b.setTitle(getString(R.string.warning));
+                    b.setMessage(getString(R.string.deskpool_unknown_error));
+                    b.setNegativeButton(getString(R.string.ok) , new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick( DialogInterface arg0, int arg1)
@@ -612,9 +612,9 @@ public class DesktopPoolActivity extends Activity {
                     //();
                     AlertDialog.Builder b1 = new AlertDialog.Builder(DesktopPoolActivity.this);
                     b1.setIcon(R.drawable.ic_dialog_alert_holo_light);
-                    b1.setTitle("警告");
-                    b1.setMessage("無可用虛擬機器, 請聯絡管理者");
-                    b1.setNegativeButton("確定" , new DialogInterface.OnClickListener()
+                    b1.setTitle(getString(R.string.warning));
+                    b1.setMessage(getString(R.string.deskpool_no_vm));
+                    b1.setNegativeButton(getString(R.string.ok) , new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick( DialogInterface arg0, int arg1)

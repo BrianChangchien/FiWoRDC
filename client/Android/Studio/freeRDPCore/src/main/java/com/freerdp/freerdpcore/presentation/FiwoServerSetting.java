@@ -20,10 +20,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.freerdp.freerdpcore.R;
 import com.freerdp.freerdpcore.utils.GlobelSetting;
@@ -70,7 +72,7 @@ public class FiwoServerSetting extends Dialog implements
         private DownloadManager mDownloadManager;
         private long enqueueId;
         private BroadcastReceiver  mBroadcastReceiver;
-        private String sFiWoUpgradePath, sFiWoUpgradeName, sFiWoAppVersion;
+        private String sFiWoUpgradePath, sFiWoUpgradeName="", sFiWoAppVersion="";
 
     public FiwoServerSetting(Activity a) {
             super(a);
@@ -145,12 +147,38 @@ public class FiwoServerSetting extends Dialog implements
 
         SharedPreferences userDetails = context.getSharedPreferences("FiWoServer", Context.MODE_PRIVATE);
         String FiwoIP = userDetails.getString("ip", "");
+        TextView tvTitle = (TextView) findViewById(R.id.textFiWoAddress);
+        tvTitle.setText(R.string.network_server_address);
+        TextView tvexample = (TextView) findViewById(R.id.textFiWoAddressExample);
+        tvexample.setText(R.string.example_network);
         editFiwoServerAddr = (EditText) findViewById(R.id.editFIWOaddress);
         editFiwoServerAddr.setText(FiwoIP);
+        editFiwoServerAddr.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                // If the event is a key-down event on the "enter" button
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    // Perform action on key press
+
+                    return true;
+                }
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER)) {
+                    // Perform action on key press
+
+                    return true;
+                }
+                return false;
+            }
+
+        });
         bConnected=false;
 
         btnCheckConnect = (Button) findViewById(R.id.btnFiwoServerCheckConnect);
+        btnCheckConnect.setText(R.string.network_check_connection);
         btnFinish = (Button) findViewById(R.id.btnFiwoServerFinish);
+        btnFinish.setText(R.string.network_Finish);
         btnCheckConnect.setOnClickListener(this);
         btnFinish.setOnClickListener(this);
         btnFinish.setEnabled(false);
@@ -160,19 +188,20 @@ public class FiwoServerSetting extends Dialog implements
     private void process_press_checkconnect() {
         sFiwoServerAddr = editFiwoServerAddr.getText().toString();
         if (sFiwoServerAddr.equals("")) {
-            editFiwoServerAddr.setError("請輸入FiWo Server Address");
+            editFiwoServerAddr.setError(getContext().getString(R.string.network_server_address));
             return;
         }
         bHandshakeResponse = false;
         startTimer();
-        show_process_dialog("Loading", false);
+
+        show_process_dialog(getContext().getString(R.string.loading), false);
         Thread thread = new Thread(ThreadHandshake);
         thread.start();
-        //editFiwoServerAddr.setError("請輸入FiWo Server Address");
+
     }
 
     private void process_press_finish() {
-        show_process_dialog("Loading", false);
+        show_process_dialog(getContext().getString(R.string.loading), false);
         stopTimer();
         Thread thread = new Thread(ThreadDomain);
         thread.start();
@@ -253,15 +282,19 @@ public class FiwoServerSetting extends Dialog implements
             if (status_code == 200) {
                 soapDatainJsonObject = XML.toJSONObject(result);
                 JSONObject jsonAPPInfo = soapDatainJsonObject.getJSONObject("deskpoolApp");
-                sFiWoUpgradeName = jsonAPPInfo.getString("androidName");
-                sFiWoAppVersion = jsonAPPInfo.getString("androidVersion");
                 sFiWoUpgradePath = jsonAPPInfo.getString("baseUrl");
+
+                if (jsonAPPInfo.has("androidName"))
+                    sFiWoUpgradeName = jsonAPPInfo.getString("androidName");
+                if (jsonAPPInfo.has("androidVersion"))
+                    sFiWoAppVersion = jsonAPPInfo.getString("androidVersion");
+
 
                 if(mHandler != null)
                 {
                     Message msg1 = new Message();
                     boolean bUpdrade = false;
-                    if (sFiWoAppVersion.isEmpty() || sFiWoUpgradeName.isEmpty())
+                    if (sFiWoAppVersion.equals("") || sFiWoUpgradeName.equals(""))
                         bUpdrade = false;
                     else
                         bUpdrade = GlobelSetting.compareVersionNames(sCurrentVersionName, sFiWoAppVersion);
@@ -312,6 +345,8 @@ public class FiwoServerSetting extends Dialog implements
 
             HttpEntity resEntity = response.getEntity();
 
+            bHandshakeResponse = true;
+
             if (resEntity != null) {
                 result = EntityUtils.toString(resEntity);
                 soapDatainJsonObject = XML.toJSONObject(result);
@@ -326,8 +361,6 @@ public class FiwoServerSetting extends Dialog implements
         }catch (Exception e) {
             e.printStackTrace();
         }
-
-        bHandshakeResponse = true;
         return soapDatainJsonObject.toString();
     }
 
@@ -365,7 +398,7 @@ public class FiwoServerSetting extends Dialog implements
             mTimerTask = new TimerTask() {
                 @Override
                 public void run() {
-                    if (false == bHandshakeResponse) {
+                    if (bHandshakeResponse) {
                         if(mHandler != null)
                         {
                             Message msg1 = new Message();
@@ -433,15 +466,15 @@ public class FiwoServerSetting extends Dialog implements
                     cancel_progressdialog();
                     AlertDialog.Builder b = new AlertDialog.Builder(context);
                     b.setIcon(R.drawable.ic_dialog_alert_holo_light);
-                    b.setTitle("更新");
-                    b.setMessage("有新版本的FiWoRDC, 請按確定鍵完成更新");
-                    b.setNegativeButton("確定" , new DialogInterface.OnClickListener()
+                    b.setTitle(getContext().getString(R.string.network_update));
+                    b.setMessage(getContext().getString(R.string.network_version_update));
+                    b.setNegativeButton(getContext().getString(R.string.ok) , new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick( DialogInterface arg0, int arg1)
                         {
                            downloadNewVersion();
-                           show_process_dialog("Downloading", false);
+                           show_process_dialog(getContext().getString(R.string.network_downloading), false);
                            mBroadcastReceiver  = new BroadcastReceiver() {
                                 @Override
                                 public void onReceive(Context context, Intent intent) {
