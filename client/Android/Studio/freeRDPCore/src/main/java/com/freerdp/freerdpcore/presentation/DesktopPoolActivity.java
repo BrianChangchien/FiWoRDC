@@ -24,6 +24,7 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.freerdp.freerdpcore.R;
@@ -145,6 +146,9 @@ public class DesktopPoolActivity extends Activity {
 
     private void process_ui() {
 
+        TextView tvTitle = (TextView) findViewById(R.id.textDeskpoolTitle);
+        tvTitle.setText(R.string.deskpool_select);
+
         btn_info = (ImageButton) findViewById(R.id.imgBtn_deskpool_info);
         btn_info.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,7 +192,9 @@ public class DesktopPoolActivity extends Activity {
                 if (jsondeskpool.getString("type").equals("private")) {
                     sName = jsondeskpool.getString("osName");
                     sID = jsondeskpool.getString("id");
-                    sPoolType = "<私有虛擬機>";
+                    sPoolType = "<";
+                    sPoolType += getString(R.string.deskpool_private_vm);
+                    sPoolType += ">";
                     sName += "\n";
                     sName += sPoolType + "\n";
                     sName += "(" + jsondeskpool.getString("container") + ")";
@@ -201,7 +207,9 @@ public class DesktopPoolActivity extends Activity {
                 } else {
                     sName = jsondeskpool.getString("name");
                     sID = jsondeskpool.getString("id");
-                    sPoolType = "<公有桌面池>";
+                    sPoolType = "<";
+                    sPoolType += getString(R.string.deskpool_public_vm);
+                    sPoolType += ">";
                     sName += "\n";
                     sName += sPoolType + "\n";
                     sName += "(" + jsondeskpool.getString("container") + ")";

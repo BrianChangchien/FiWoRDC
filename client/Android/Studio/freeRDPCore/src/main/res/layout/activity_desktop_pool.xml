@@ -45,7 +45,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textColor="#fff"
-                android:text="選擇桌面池"
                 android:textSize="20dp" />
 
             <GridView

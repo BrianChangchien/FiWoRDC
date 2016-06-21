@@ -63,6 +63,7 @@
                 android:textSize="14dp"
                 android:imeOptions="actionDone"
                 android:background="@drawable/edittext_border"
+                android:padding="5dp"
                 />
 
             <EditText
@@ -79,7 +80,8 @@
                 android:singleLine="true"
                 android:textSize="14dp"
                 android:imeOptions="actionDone"
-                android:background="@drawable/edittext_border"/>
+                android:background="@drawable/edittext_border"
+                android:padding="5dp"/>
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

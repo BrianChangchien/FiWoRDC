@@ -96,8 +96,8 @@ public class LoginActivity extends Activity {
     // UI Control
     private ImageButton btn_info, btn_network, btn_reload;
     private Button btn_login;
-    private String sDomain;
-    private String sFiWoSvrAddr;
+    private String sDomain ="";
+    private String sFiWoSvrAddr = "";
     private EditText edtAccount, edtPassword;
     private ProgressDialog pDialog;
     private JSONArray arrClient;
@@ -217,6 +217,70 @@ public class LoginActivity extends Activity {
         b.show();
     }
 
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event)
+    {
+        int action = event.getAction();
+        int keyCode = event.getKeyCode();
+        switch (keyCode)
+        {
+            case KeyEvent.KEYCODE_ENTER:
+                if (action == KeyEvent.ACTION_DOWN)
+                {
+                    // Perform action on key press
+                    if (sFiWoSvrAddr.isEmpty() || sDomain.isEmpty())
+                    {
+                        AlertDialog.Builder b = new AlertDialog.Builder(LoginActivity.this);
+                        b.setIcon(R.drawable.ic_dialog_alert_holo_light);
+                        b.setTitle(getString(R.string.warning));
+                        b.setMessage(getString(R.string.login_alert_non_setting_address));
+                        b.setNegativeButton(getString(R.string.ok) , new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick( DialogInterface arg0, int arg1)
+                            {
+                                arg0.dismiss();
+                            }
+                        });
+                        b.show();
+                    }
+                    else
+                        process_login();
+
+                    return true;
+                }
+                break;
+            case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                if (action == KeyEvent.ACTION_DOWN)
+                {
+                    // Perform action on key press
+                    if (sFiWoSvrAddr.isEmpty() || sDomain.isEmpty())
+                    {
+                        AlertDialog.Builder b = new AlertDialog.Builder(LoginActivity.this);
+                        b.setIcon(R.drawable.ic_dialog_alert_holo_light);
+                        b.setTitle(getString(R.string.warning));
+                        b.setMessage(getString(R.string.login_alert_non_setting_address));
+                        b.setNegativeButton(getString(R.string.ok) , new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick( DialogInterface arg0, int arg1)
+                            {
+                                arg0.dismiss();
+                            }
+                        });
+                        b.show();
+                    }
+                    else
+                        process_login();
+
+                    return true;
+                }
+                break;
+            default:
+                return super.dispatchKeyEvent(event);
+        }
+        return true;
+    }
 
     private void process_ui() {
 
@@ -224,46 +288,7 @@ public class LoginActivity extends Activity {
         edtPassword = (EditText) findViewById(R.id.editPassword);
 
         edtAccount.setHint(R.string.account);
-        edtAccount.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    // Perform action on key press
-
-                    return true;
-                }
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER)) {
-                    // Perform action on key press
-
-                    return true;
-                }
-
-                return false;
-            }
-
-        });
         edtPassword.setHint(R.string.password);
-        edtPassword.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    // Perform action on key press
-
-                    return true;
-                }
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER)) {
-                    // Perform action on key press
-
-                    return true;
-                }
-
-                return false;
-            }
-        });
 
         fd = new FiwoServerSetting(LoginActivity.this);
         String strTitle = "<font color='#465dbf'>";
@@ -272,6 +297,30 @@ public class LoginActivity extends Activity {
         fd.setTitle(Html.fromHtml(strTitle));
 
         fd.requestWindowFeature(Window.FEATURE_LEFT_ICON);
+
+        DialogInterface.OnKeyListener keyListener = new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode,
+                                 KeyEvent event) {
+                // If the event is a key-down event on the "enter" button
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    // Perform action on key press
+                    fd.processEnterKeyEvent();
+                    return true;
+                }
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER)) {
+                    // Perform action on key press
+                    fd.processEnterKeyEvent();
+                    return true;
+                }
+                return false;
+            }
+
+        };
+        fd.setOnKeyListener(keyListener);
+
         fd.setDialogResult(new FiwoServerSetting.OnMyDialogResult() {
             public void finish(String FiWoAddr, String result) {
                 // now you can use the 'result' on your activity
@@ -512,8 +561,25 @@ public class LoginActivity extends Activity {
     private JSONArray ParseClientInfotoAry(String sClientInfo) throws JSONException {
         JSONObject soapDatainJsonObject = null;
         soapDatainJsonObject = XML.toJSONObject(sClientInfo);
+        JSONObject DeskpoolJsonObject = soapDatainJsonObject.getJSONObject("deskpools");
+        JSONArray  interventionJsonArray = new JSONArray();
+        JSONObject interventionObject = new JSONObject();
 
-        return soapDatainJsonObject.getJSONObject("deskpools").getJSONArray("deskpool");
+        Object intervention = DeskpoolJsonObject.get("deskpool");
+        if (intervention instanceof JSONArray) {
+            // It's an array
+            interventionJsonArray = (JSONArray)intervention;
+        }
+        else if (intervention instanceof JSONObject) {
+            // It's an object
+            interventionObject = (JSONObject)intervention;
+            interventionJsonArray.put(interventionObject);
+        }
+        else {
+            // It's something else, like a string or number
+        }
+
+         return interventionJsonArray;
 
      }
 
@@ -654,6 +720,8 @@ public class LoginActivity extends Activity {
         }
         return "0.0.0.0";
     }
+
+
     // -----------------------------------------------------------
     private class MyHandler extends Handler
     {

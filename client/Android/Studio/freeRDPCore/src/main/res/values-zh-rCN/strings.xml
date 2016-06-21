@@ -4,23 +4,23 @@
     <string name="yes">是</string>
     <string name="no">否</string>
     <string name="cancel">取消</string>
-    <string name="cont">取消</string>
-    <string name="logout">離開</string>
+    <string name="cont">继续</string>
+    <string name="logout">断开</string>
     <!-- Home menu items -->
     <string name="menu_exit">退出</string>
     <string name="menu_about">关于</string>
     <string name="menu_help">帮助</string>
     <string name="menu_new_bookmark">新建连接</string>
-    <string name="menu_app_settings">設置</string>
+    <string name="menu_app_settings">设置</string>
     <!-- Bookmark menu items -->
     <string name="menu_title_bookmark">操作</string>
     <string name="menu_connect">连接</string>
     <string name="menu_edit">编辑</string>
     <string name="menu_delete">删除</string>
     <!-- Session menu items -->
-    <string name="menu_sys_keyboard">鍵盤</string>
-    <string name="menu_ext_keyboard">功能鍵</string>
-    <string name="menu_touch_pointer">觸控鼠標</string>
+    <string name="menu_sys_keyboard">键盘</string>
+    <string name="menu_ext_keyboard">功能键</string>
+    <string name="menu_touch_pointer">触控鼠标</string>
     <string name="menu_home">主目录</string>
     <string name="menu_disconnect">中斷連線</string>
     <!-- List section headers -->
@@ -31,8 +31,8 @@
     <!-- List placeholder labels -->
     <string name="list_placeholder_login">登录</string>
     <string name="list_placeholder_no_servers">没有服务</string>
-    <string name="list_placeholder_connecting">連接中 &#8230;</string>
-    <string name="list_placeholder_disconnecting">正在中斷連線 &#8230;</string>
+    <string name="list_placeholder_connecting">连接中 &#8230;</string>
+    <string name="list_placeholder_disconnecting">正在断开连接 &#8230;</string>
     <string name="list_placeholder_connection_error">连接丢失</string>
     <string name="list_placeholder_wrong_password">密码错误</string>
     <string name="list_placeholder_invalid_username">用户名错误</string>
@@ -132,9 +132,9 @@
     <string name="settings_description_after_minutes">%1$d 秒后</string>
     <string name="settings_description_disabled">Disabled</string>
     <!-- Activity titles -->
-    <string name="title_bookmark_settings">連接設置</string>
-    <string name="title_application_settings">設置</string>
-    <string name="title_home">FiWoRDC APP</string>
+    <string name="title_bookmark_settings">连接设置</string>
+    <string name="title_application_settings">设置</string>
+    <string name="title_home">aFreeRDP - FreeRDP for Android</string>
     <string name="title_create_shortcut">RDP Connections</string>
     <string name="title_help">帮助</string>
     <string name="title_about">关于</string>
@@ -167,32 +167,36 @@
     <string name="debug_level">Debug Level</string>
     <string name="settings_debug">Debug Settings</string>
     <string name="dlg_login_info">求助</string>
-    <string name="dlg_login_info_content">1. 第一次使用，請先進行連線設定。\n2. 由右上角「網路圖示」進入設定畫面。\n3. 輸入 IP位址或DNS域名後，按下「檢查連線」按鈕。\n4. 出現「連線成功」圖示，按下「完成」回到登入頁，此時系統將自動帶入可使用的域名。\n5. 輸入正確帳號、密碼，「登入」按鈕就會轉為綠色可點擊狀態。</string>
-    <string name="dlg_deskpool_info_content">1. 登入成功後，請於桌面池選擇一台虛擬機。\n2.\n方法一：點選「公有桌面池」，再點選「連線」，即可連線由系統隨機分配的閒置虛擬機。\n方法二：點選由已授權使用的「私有虛擬機」，再點選「連線」即可開始使用。\n3. 設定默認：如有設定默認功能，系統30秒後將自動與該虛擬機連線。\n4. 開啟「默認」：在「未選取」的狀態下長按圖示，可將該虛擬機設定「默認」。\n5. 取消「默認」：在「未選取」的狀態下長按圖示，可取消「默認」。</string>
-    <string name="ok">確定</string>
+    <string name="dlg_login_info_content">1. 第一次使用，请先进行连线设定。\n2. 由右上角「网路图示」进入设定画面。\n3. 输入IP位址或DNS域名后，按下「检查连线」按钮。\n4. 出现「连线成功」图示，按下「完成」回到登入页，此时系统将自动带入可使用的域名。\n5. 输入正确帐号、密码，「登入」按钮就会转为绿色可点击状态。</string>
+    <string name="dlg_deskpool_info_content">1. 登入成功后，请于桌面池选择一台虚拟机。\n2.\n方法一：点选「公有桌面池」，再点选「连线」，即可连线由系统随机分配的闲置虚拟机。\n方法二:点选由己授权使用的「私有虚拟机」,再点选「连线」即可开始使用。\n3. 设定默认：如有设定默认功能，系统30秒后将自动与该虚拟机连线。\n4. 开启「默认」：在「未选取」的状态下长按图示，可将该虚拟机设定「默认」。\n5. 取消「默认」：在「未选取」的状态下长按图示，可取消「默认」。\n6. 登出系统：点选「登出 」图示即可登出系统，回到登入页面。</string>
+    <string name="ok">确定</string>下載中
     <string name="loading">等待中</string>
     <!-- login activity strings -->
-    <string name="account">帳號</string>
-    <string name="account_empty">請輸入帳號</string>
-    <string name="password">密碼</string>
-    <string name="password_empty">請輸入密碼</string>
-    <string name="account_password_error">帳號或密碼有誤,請重新輸入</string>
-    <string name="login">登入</string>
-    <string name="dlg_network_setting">伺服器設置</string>
-    <string name="exit">離開</string>
-    <string name="exit_message">是否要離開FiWoRDC App ?</string>
+    <string name="account">帐号</string>
+    <string name="account_empty">请输入帐号</string>
+    <string name="password">密码</string>
+    <string name="password_empty">请输入密码</string>
+    <string name="account_password_error">帐号或密码有误,请重新输入</string>
+    <string name="login">登录</string>
+    <string name="dlg_network_setting">伺服器设置</string>
+    <string name="exit">离开</string>
+    <string name="exit_message">是否要离开FiWoRDC App ?</string>
     <string name="warning">警告</string>
-    <string name="login_unknown_error">發生未知錯誤,請聯繫管理者</string>
+    <string name="login_unknown_error">发生未知错误,请联系管理者</string>
+    <string name="login_alert_non_setting_address">请先设定FiWo伺服器位置!</string>
     <!-- network dlg strings -->
     <string name="network_server_address">FiWo伺服器位置</string>
-    <string name="network_server_address_message">請輸入FiWo伺服器位置</string>
-    <string name="example_network">範例 : fiwoserver.cesbg.foxconn,10.62.8.234</string>
-    <string name="network_check_connection">檢查連線</string>
+    <string name="network_server_address_message">请输入FiWo伺服器位置</string>
+    <string name="example_network">范例 : fiwoserver.cesbg.foxconn,10.62.8.234</string>
+    <string name="network_check_connection">检查连线</string>
     <string name="network_Finish">完成</string>
     <string name="network_update">更新</string>
-    <string name="network_version_update">有新版本的FiWoRDC,請按確定鍵完成更新</string>
-    <string name="network_downloading">下載中</string>
+    <string name="network_version_update">有新版本的FiWoRDC,请按确定键完成更新</string>
+    <string name="network_downloading">下载中</string>
     <!--deskpool activity strings-->
-    <string name="deskpool_unknown_error">發生未預知的結果,請聯絡管理者</string>
-    <string name="deskpool_no_vm">無可用虛擬機器, 請聯絡管理者</string>
+    <string name="deskpool_unknown_error">发生未知错误,请联系管理者</string>
+    <string name="deskpool_no_vm">无可用虚拟机器, 请联络管理者</string>
+    <string name="deskpool_select">选择桌面池</string>
+    <string name="deskpool_private_vm">私有虚拟机</string>
+    <string name="deskpool_public_vm">公有桌面池</string>
 </resources>

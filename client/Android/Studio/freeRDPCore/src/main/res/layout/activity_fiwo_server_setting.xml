@@ -12,7 +12,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         >
         <TextView
@@ -44,13 +44,15 @@
                 android:singleLine="true"
                 android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ."
                 android:imeOptions="actionDone"
-                android:layout_marginTop="5dp" />
+                android:layout_marginTop="5dp"
+                android:padding="5dp"/>
              <ImageView
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
                  android:id="@+id/ImgViewFiwoServerConnectStatus"
                  android:layout_weight="1"
-                 android:visibility="invisible" />
+                 android:visibility="invisible"
+                 android:layout_marginTop="5dp"/>
         </LinearLayout>l
         <TextView
             android:id="@+id/textFiWoAddressExample"

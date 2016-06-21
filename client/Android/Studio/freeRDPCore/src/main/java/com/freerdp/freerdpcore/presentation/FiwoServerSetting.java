@@ -53,9 +53,9 @@ public class FiwoServerSetting extends Dialog implements
         private Button btnCheckConnect, btnFinish;
         private EditText editFiwoServerAddr;
         private String sFiwoServerAddr;
-        private boolean bConnected;
+        private Boolean bConnected;
         private ProgressDialog pDialog;
-        private boolean bHandshakeResponse;
+        private Boolean bHandshakeResponse=Boolean.FALSE;
         private Timer mTimer = null;
         private TimerTask mTimerTask = null;
         private static int count = 0;
@@ -137,8 +137,16 @@ public class FiwoServerSetting extends Dialog implements
         imgStatus.setVisibility(View.INVISIBLE);
         btnFinish.setBackgroundResource(R.drawable.btn_bg_grey);
         btnFinish.setEnabled(false);
+        bHandshakeResponse = Boolean.FALSE;
     }
 
+    public void processEnterKeyEvent(){
+        if (Boolean.TRUE.equals(bHandshakeResponse))
+            process_press_finish();
+        else
+            process_press_checkconnect();
+
+    }
     public void setDialogResult(OnMyDialogResult dialogResult){
         mDialogResult = dialogResult;
     }
@@ -151,30 +159,6 @@ public class FiwoServerSetting extends Dialog implements
         tvTitle.setText(R.string.network_server_address);
         TextView tvexample = (TextView) findViewById(R.id.textFiWoAddressExample);
         tvexample.setText(R.string.example_network);
-        editFiwoServerAddr = (EditText) findViewById(R.id.editFIWOaddress);
-        editFiwoServerAddr.setText(FiwoIP);
-        editFiwoServerAddr.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-
-                // If the event is a key-down event on the "enter" button
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    // Perform action on key press
-
-                    return true;
-                }
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER)) {
-                    // Perform action on key press
-
-                    return true;
-                }
-                return false;
-            }
-
-        });
-        bConnected=false;
-
         btnCheckConnect = (Button) findViewById(R.id.btnFiwoServerCheckConnect);
         btnCheckConnect.setText(R.string.network_check_connection);
         btnFinish = (Button) findViewById(R.id.btnFiwoServerFinish);
@@ -182,16 +166,53 @@ public class FiwoServerSetting extends Dialog implements
         btnCheckConnect.setOnClickListener(this);
         btnFinish.setOnClickListener(this);
         btnFinish.setEnabled(false);
+
+        editFiwoServerAddr = (EditText) findViewById(R.id.editFIWOaddress);
+        editFiwoServerAddr.setText(FiwoIP);
+        /*
+        editFiwoServerAddr.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                // If the event is a key-down event on the "enter" button
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    // Perform action on key press
+                    if (Boolean.TRUE.equals(bHandshakeResponse)) {
+                        process_press_finish();
+                        return true;
+                    }else {
+                        process_press_checkconnect();
+                        return true;
+                    }
+
+                }
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER)) {
+                    // Perform action on key press
+                    if (Boolean.TRUE.equals(bHandshakeResponse)) {
+                        process_press_finish();
+                        return true;
+                    }else {
+                        process_press_checkconnect();
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+        });
+        */
+        bConnected=false;
         // sFiwoServerAddr = editFiwoServerAddr.getText().toString();
     }
 
     private void process_press_checkconnect() {
         sFiwoServerAddr = editFiwoServerAddr.getText().toString();
         if (sFiwoServerAddr.equals("")) {
-            editFiwoServerAddr.setError(getContext().getString(R.string.network_server_address));
+            editFiwoServerAddr.setError(getContext().getString(R.string.network_server_address_message));
             return;
         }
-        bHandshakeResponse = false;
+        bHandshakeResponse = Boolean.FALSE;
         startTimer();
 
         show_process_dialog(getContext().getString(R.string.loading), false);
@@ -280,6 +301,7 @@ public class FiwoServerSetting extends Dialog implements
             }
 
             if (status_code == 200) {
+                bHandshakeResponse = Boolean.TRUE;
                 soapDatainJsonObject = XML.toJSONObject(result);
                 JSONObject jsonAPPInfo = soapDatainJsonObject.getJSONObject("deskpoolApp");
                 sFiWoUpgradePath = jsonAPPInfo.getString("baseUrl");
@@ -344,8 +366,6 @@ public class FiwoServerSetting extends Dialog implements
             response = client.execute(request);
 
             HttpEntity resEntity = response.getEntity();
-
-            bHandshakeResponse = true;
 
             if (resEntity != null) {
                 result = EntityUtils.toString(resEntity);
@@ -435,7 +455,6 @@ public class FiwoServerSetting extends Dialog implements
          count = 0;
 
      }
-
     // -----------------------------------------------------------
     private class MyHandler extends Handler
     {

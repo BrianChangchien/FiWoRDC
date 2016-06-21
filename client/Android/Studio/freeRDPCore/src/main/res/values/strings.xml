@@ -207,10 +207,10 @@
     <string name="debug_level">Debug Level</string>
     <string name="settings_debug">Debug Settings</string>
     <string name="dlg_login_info">Help</string>
-    <string name="dlg_login_info_content">1. 第一次使用，請先進行連線設定。\n2. 由右上角「網路圖示」進入設定畫面。\n3. 輸入 IP位址或DNS域名後，按下「檢查連線」按鈕。\n4. 出現「連線成功」圖示，按下「完成」回到登入頁，此時系統將自動帶入可使用的域名。\n5. 輸入正確帳號、密碼，「Login」按鈕就會轉為綠色可點擊狀態。</string>
-    <string name="dlg_deskpool_info_content">1. 登入成功後，請於桌面池選擇一台虛擬機。\n2.\n方法一：點選「公有桌面池」，再點選「連線」，即可連線由系統隨機分配的閒置虛擬機。\n方法二：點選由已授權使用的「私有虛擬機」，再點選「連線」即可開始使用。\n3. 設定默認：如有設定默認功能，系統30秒後將自動與該虛擬機連線。\n4. 開啟「默認」：在「未選取」的狀態下長按圖示，可將該虛擬機設定「默認」。\n5. 取消「默認」：在「未選取」的狀態下長按圖示，可取消「默認」。</string>
+    <string name="dlg_login_info_content">1. Please configure the network setting for your first use.\n2. Enter the setting page via the icon "network" in the right top corner.\n3. Press the button "Check Status" after Keying in IP address or domain name.\n4. If network connects successfully, please press "OK" back to login page, RDC system will carry out the applicable domain automatically.\n5. Button "Login" will turn into clickable mode (Green) when you input the correct account and password.</string>
+    <string name="dlg_deskpool_info_content">1. Please select a VM to access after logging into the desktop pool page successfully.\n2.\nMode1：To select a random VM assigned by RDC system, please click on the icon "public" and access the VM after clicking the button "connect" on the icon.\nMode2：Select an authorized private VM and access it after clicking the button "connect" on the icon。\n3. Default setting：RDC System will automatically access the default VM after 30 seconds if you already set it up.\n4. To activate the default mode, please holding an "unselected" desktop pool icon without default setting till the right top circle turns into RED.\n5. To deactivate the default mode, please holding an "unselected" desktop pool icon with default setting till the right top circle turns into GREY.\n6. Logout：When you click the icon "Logout " in the right top corner and will return to login page.</string>
     <string name="ok">OK</string>
-    <string name="loading">loading</string>
+    <string name="loading">Loading</string>
     <!-- login activity strings -->
     <string name="account">Account</string>
     <string name="account_empty">Please enter Account</string>
@@ -223,6 +223,7 @@
     <string name="exit_message">Do you want to leave FiWoRDC APP ?</string>
     <string name="warning">Warning</string>
     <string name="login_unknown_error">Unknown error, please contact manager</string>
+    <string name="login_alert_non_setting_address">Please setting FiWo address first !</string>
     <!-- network dlg strings -->
     <string name="network_server_address">FiWo Server Address</string>
     <string name="network_server_address_message">Please enter FiWo Server Address</string>
@@ -235,4 +236,7 @@
     <!--deskpool activity strings-->
     <string name="deskpool_unknown_error">Unknown error, please contact manager</string>
     <string name="deskpool_no_vm">No available VMs, please contact manager</string>
+    <string name="deskpool_select">Desktop pool selection</string>
+    <string name="deskpool_private_vm">Private</string>
+    <string name="deskpool_public_vm">Public</string>
 </resources>

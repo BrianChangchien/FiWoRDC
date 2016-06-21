@@ -83,6 +83,7 @@
                     android:layout_alignStart="@+id/imageView2"
                     android:imeOptions="actionDone"
                     android:layout_marginTop="10dp"
+                    android:padding="5dp"
                     android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@._-"/>
                 <EditText
                     android:layout_width="220dp"
@@ -100,6 +101,7 @@
                     android:layout_alignStart="@+id/editAccount"
                     android:imeOptions="actionDone"
                     android:layout_marginTop="10dp"
+                    android:padding="5dp"
                     android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^*_-"/>
                 <LinearLayout
                     android:orientation="horizontal"
@@ -137,7 +139,6 @@
                     android:layout_alignLeft="@+id/editPassword"
                     android:layout_alignStart="@+id/editPassword"
                     android:layout_marginTop="10dp"/>
-
                 <ImageButton
                     android:layout_width="60dp"
                     android:layout_height="60dp"
