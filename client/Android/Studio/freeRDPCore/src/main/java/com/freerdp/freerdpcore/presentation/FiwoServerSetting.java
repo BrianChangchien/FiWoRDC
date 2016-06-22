@@ -316,11 +316,12 @@ public class FiwoServerSetting extends Dialog implements
                 {
                     Message msg1 = new Message();
                     boolean bUpdrade = false;
+                    /*
                     if (sFiWoAppVersion.equals("") || sFiWoUpgradeName.equals(""))
                         bUpdrade = false;
                     else
                         bUpdrade = GlobelSetting.compareVersionNames(sCurrentVersionName, sFiWoAppVersion);
-
+*/
                     if (bUpdrade)
                         msg1.what = appdefine.MSG_NEED_UPGRADE;
                     else

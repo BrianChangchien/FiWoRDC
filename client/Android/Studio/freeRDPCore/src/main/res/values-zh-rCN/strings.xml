@@ -184,6 +184,8 @@
     <string name="warning">警告</string>
     <string name="login_unknown_error">发生未知错误,请联系管理者</string>
     <string name="login_alert_non_setting_address">请先设定FiWo伺服器位置!</string>
+    <string name="login_alert_connect_fail">连线失败 !</string>
+    <string name="login_first_use_message">还没设定连线?\n请按这里</string>
     <!-- network dlg strings -->
     <string name="network_server_address">FiWo伺服器位置</string>
     <string name="network_server_address_message">请输入FiWo伺服器位置</string>

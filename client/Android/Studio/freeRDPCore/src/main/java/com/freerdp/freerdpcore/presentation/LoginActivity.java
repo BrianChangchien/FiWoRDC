@@ -2,14 +2,21 @@ package com.freerdp.freerdpcore.presentation;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -19,6 +26,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -66,6 +75,7 @@ import com.freerdp.freerdpcore.domain.QuickConnectBookmark;
 import com.freerdp.freerdpcore.utils.BookmarkArrayAdapter;
 import com.freerdp.freerdpcore.utils.GlobelSetting;
 import com.freerdp.freerdpcore.utils.SeparatedListAdapter;
+import com.freerdp.freerdpcore.utils.TooltipWindow;
 import com.freerdp.freerdpcore.utils.appdefine;
 
 import org.apache.http.HttpEntity;
@@ -88,7 +98,7 @@ import org.json.JSONObject;
 import org.json.XML;
 
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends Activity{
 
     final Context context = this;
     private Spinner spinner;
@@ -102,6 +112,27 @@ public class LoginActivity extends Activity {
     private ProgressDialog pDialog;
     private JSONArray arrClient;
     private static MyHandler mHandler;
+
+    private DownloadManager mDownloadManager;
+    private long enqueueId;
+    private BroadcastReceiver mBroadcastReceiver;
+    private String sFiWoUpgradePath, sFiWoUpgradeName="", sFiWoAppVersion="";
+
+    private Timer mTimer = null;
+    private TimerTask mTimerTask = null;
+    private static int count = 0;
+    private boolean isPause = false;
+    private boolean isStop = true;
+
+    private static int delay = 15000;  //1s
+    private static int period = 15000;  //1s
+
+    private Boolean bCheckVersion = Boolean.FALSE;
+    private Boolean bSendRequestResponse = Boolean.FALSE;
+
+    TooltipWindow tipWindow;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +162,7 @@ public class LoginActivity extends Activity {
     protected void onStart()
     {
         super.onStart();
+
     }
 
     @Override
@@ -217,6 +249,7 @@ public class LoginActivity extends Activity {
         b.show();
     }
 
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent event)
     {
@@ -288,7 +321,11 @@ public class LoginActivity extends Activity {
         edtPassword = (EditText) findViewById(R.id.editPassword);
 
         edtAccount.setHint(R.string.account);
+        edtAccount.setText("Anson");
         edtPassword.setHint(R.string.password);
+        edtPassword.setText("Aa12345678");
+
+        tipWindow = new TooltipWindow(LoginActivity.this);
 
         fd = new FiwoServerSetting(LoginActivity.this);
         String strTitle = "<font color='#465dbf'>";
@@ -367,15 +404,29 @@ public class LoginActivity extends Activity {
         btn_login.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                process_login();
+                //process_login();
+                process_version_upgrade();
             }
         });
         btn_login.setEnabled(false);
 
+        if (sFiWoSvrAddr.isEmpty() || sFiWoSvrAddr.equals("")){
+            final View anchor = findViewById(R.id.imgBtn_Network);
+            anchor.post(new Runnable(){
+                    @Override
+                    public void run(){
+                        // 构造和展现弹出窗口
+                        tipWindow.showToolTip(anchor);
+                    }
+                });
+            }
+        }
 
-    }
 
     private void process_login() {
+
+        if (Boolean.FALSE.equals(bCheckVersion))
+            show_process_dialog(getString(R.string.loading),false);
 
         if (edtAccount.getText().toString().equals("")) {
             edtAccount.setError(this.getString(R.string.account_empty));
@@ -386,7 +437,6 @@ public class LoginActivity extends Activity {
             return;
         }
 
-        show_process_dialog(false);
         Thread thread = new Thread(ThreadGetClientInfo);
         thread.start();
 
@@ -416,19 +466,13 @@ public class LoginActivity extends Activity {
 
     protected void process_setting_Network() {
         // custom dialog
-        /*
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_LEFT_ICON);
-        dialog.setContentView(R.layout.activity_fiwo_server_setting);
-        dialog.setTitle("伺服器設置");
-        dialog.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
-        dialog.setCancelable(true);*/
+        if (tipWindow != null && tipWindow.isTooltipShown())
+            tipWindow.dismissTooltip();
 
         // fd.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
         //set up button
         ImageButton imgbtnReload = (ImageButton) findViewById(R.id.ImgBtnReload);
         imgbtnReload.setVisibility(View.INVISIBLE);
-
 
         fd.show();
         fd.setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon_title_networking);
@@ -436,10 +480,22 @@ public class LoginActivity extends Activity {
     }
 
     protected void process_setting_Reload() {
-
-        show_process_dialog(false);
+        show_process_dialog(getString(R.string.loading), false);
         Thread thread = new Thread(ThreadDomain);
         thread.start();
+    }
+
+    private void process_version_upgrade(){
+        if (sFiWoSvrAddr.isEmpty()) {
+            process_login();
+            return;
+        }
+        else{
+            startTimer();
+            show_process_dialog(getString(R.string.loading), false);
+            Thread thread = new Thread(ThreadHandshake);
+            thread.start();
+        }
     }
 
     private void goto_next_activity(Class<?> cls) {
@@ -604,6 +660,97 @@ public class LoginActivity extends Activity {
             }
         }
     };
+
+    private Runnable ThreadHandshake = new Runnable() {
+        public void run() {
+            // 運行網路連線的程式
+            sendHttpGetUpgradeInfo();
+        }
+    };
+
+    private String sendHttpGetUpgradeInfo() {
+        String strUrl = "http://";
+        strUrl += sFiWoSvrAddr;
+        strUrl += ":";
+        strUrl += GlobelSetting.sServicePort;
+        strUrl += "/FiWo/Interface/rest/deskpool/app";
+        HttpClient client = new DefaultHttpClient();
+        HttpGet request = new HttpGet(strUrl);
+        HttpResponse response ;
+        String result = "";
+        JSONObject soapDatainJsonObject = null;
+        String sCurrentVersionName = null;
+        bCheckVersion = Boolean.FALSE;
+        bSendRequestResponse = Boolean.FALSE;
+        try {
+            PackageInfo pinfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            sCurrentVersionName = pinfo.versionName;
+        }
+        catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        int status_code = 0;
+        try {
+            response = client.execute(request);
+            HttpEntity resEntity = response.getEntity();
+
+            if (resEntity != null) {
+                result = EntityUtils.toString(resEntity);
+                status_code = response.getStatusLine().getStatusCode();
+                bSendRequestResponse = Boolean.TRUE;
+            }
+
+            if (status_code == 200) {
+                soapDatainJsonObject = XML.toJSONObject(result);
+                JSONObject jsonAPPInfo = soapDatainJsonObject.getJSONObject("deskpoolApp");
+                sFiWoUpgradePath = jsonAPPInfo.getString("baseUrl");
+
+                if (jsonAPPInfo.has("androidName"))
+                    sFiWoUpgradeName = jsonAPPInfo.getString("androidName");
+                if (jsonAPPInfo.has("androidVersion"))
+                    sFiWoAppVersion = jsonAPPInfo.getString("androidVersion");
+
+                if(mHandler != null)
+                {
+                    Message msg1 = new Message();
+                    boolean bUpdrade = false;
+                    if (sFiWoAppVersion.equals("") || sFiWoUpgradeName.equals(""))
+                        bUpdrade = false;
+                    else
+                        bUpdrade = GlobelSetting.compareVersionNames(sCurrentVersionName, sFiWoAppVersion);
+
+                    if (bUpdrade)
+                        msg1.what = appdefine.MSG_LOGIN_NEED_UPGRADE;
+                    else {
+                        bCheckVersion = Boolean.TRUE;
+                        msg1.what = appdefine.MSG_LOGIN_PROCESS_LOGIN;
+                    }
+                    mHandler.sendMessage(msg1);
+                }
+            }
+            else
+            {
+                if(mHandler != null) {
+                    Message msg1 = new Message();
+                    msg1.what = appdefine.MSG_CONNECTION_FAIL;
+                    mHandler.sendMessage(msg1);
+                }
+            }
+            Log.d("Response of GET request", response.toString());
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        result = Integer.toString(status_code);
+        return result;
+    }
+
     private String sendHttpGetDomain() {
         String strUrl = "http://";
         strUrl += sFiWoSvrAddr;
@@ -617,7 +764,6 @@ public class LoginActivity extends Activity {
         String result = "";
         try {
             response = client.execute(request);
-
             HttpEntity resEntity = response.getEntity();
 
             if (resEntity != null) {
@@ -634,7 +780,6 @@ public class LoginActivity extends Activity {
         }catch (Exception e) {
             e.printStackTrace();
         }
-
         return soapDatainJsonObject.toString();
     }
     private  void updateDomainControl() {
@@ -663,7 +808,7 @@ public class LoginActivity extends Activity {
         }
     }
 
-    public void show_process_dialog( boolean b_can_cancel)
+    public void show_process_dialog(String sMessage, boolean b_can_cancel)
     {
         if(pDialog != null && pDialog.isShowing())
             return;
@@ -673,7 +818,7 @@ public class LoginActivity extends Activity {
             pDialog = new ProgressDialog(this);
 
             pDialog.setTitle("");
-            pDialog.setMessage(getString(R.string.loading));
+            pDialog.setMessage(sMessage);
         }
 
         pDialog.setCancelable(b_can_cancel);
@@ -688,7 +833,6 @@ public class LoginActivity extends Activity {
             pDialog = null;
         }
     }
-
 
     public static String getMacAddress(Context context) {
         WifiManager wifiMan = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -721,6 +865,72 @@ public class LoginActivity extends Activity {
         return "0.0.0.0";
     }
 
+    public void downloadNewVersion() {
+        mDownloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        String sAPKDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS) + "/" + sFiWoUpgradeName;
+        File f = new File(sAPKDownloadPath);
+        Boolean deleted = f.delete();
+        // apkDownloadUrl 是 apk 的下载地址
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(sFiWoUpgradePath+sFiWoUpgradeName));
+
+        request.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, sFiWoUpgradeName);
+        // 获取下载队列 id
+        enqueueId = mDownloadManager.enqueue(request);
+    }
+    private void promptInstall(Uri data) {
+        Intent promptInstall = new Intent(Intent.ACTION_VIEW)
+                .setDataAndType(data, "application/vnd.android.package-archive");
+        // FLAG_ACTIVITY_NEW_TASK 可以保证安装成功时可以正常打开 app
+        promptInstall.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(promptInstall);
+    }
+
+    private void startTimer(){
+        if (mTimer == null) {
+            mTimer = new Timer();
+        }
+        if (mTimerTask == null) {
+            mTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+
+                    if (Boolean.TRUE.equals(bSendRequestResponse)) {
+                        if(mHandler != null)
+                        {
+                            Message msg1 = new Message();
+                            msg1.what = appdefine.MSG_LOGIN_CONNECT_SUCCESS;
+                            mHandler.sendMessage(msg1);
+                        }
+                    }
+                    else{
+                        if(mHandler != null)
+                        {
+                            Message msg1 = new Message();
+                            msg1.what = appdefine.MSG_LOGIN_CONNECT_FAIL;
+                            mHandler.sendMessage(msg1);
+                        }
+                    }
+                    count++;
+
+                }
+            };
+        }
+        if(mTimer != null && mTimerTask != null )
+            mTimer.schedule(mTimerTask, delay, period);
+    }
+
+    private void stopTimer() {
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+
+        if (mTimerTask != null) {
+            mTimerTask.cancel();
+            mTimerTask = null;
+        }
+        count = 0;
+    }
 
     // -----------------------------------------------------------
     private class MyHandler extends Handler
@@ -788,6 +998,82 @@ public class LoginActivity extends Activity {
                 case appdefine.MSG_LOGIN_GET_DOMAIN:{
                     cancel_progressdialog();
                     updateDomainControl();
+                }
+                break;
+                case appdefine.MSG_LOGIN_PROCESS_LOGIN: {
+                    stopTimer();
+                    process_login();
+                    //stopTimer();
+                    //cancel_progressdialog();
+                }
+                break;
+                case appdefine.MSG_LOGIN_NEED_UPGRADE:{
+                    stopTimer();
+                    cancel_progressdialog();
+                    AlertDialog.Builder b = new AlertDialog.Builder(context);
+                    b.setIcon(R.drawable.ic_dialog_alert_holo_light);
+                    b.setTitle(getString(R.string.network_update));
+                    b.setMessage(getString(R.string.network_version_update));
+                    b.setNegativeButton(getString(R.string.ok) , new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick( DialogInterface arg0, int arg1)
+                        {
+                            downloadNewVersion();
+                            show_process_dialog(getString(R.string.network_downloading), false);
+                            mBroadcastReceiver  = new BroadcastReceiver() {
+                                @Override
+                                public void onReceive(Context context, Intent intent) {
+                                    cancel_progressdialog();
+                                    long downloadCompletedId = intent.getLongExtra(
+                                            DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+                                    // 检查是否是自己的下载队列 id, 有可能是其他应用的
+                                    if (enqueueId != downloadCompletedId) {
+                                        return;
+                                    }
+                                    DownloadManager.Query query = new DownloadManager.Query();
+                                    query.setFilterById(enqueueId);
+                                    Cursor c = mDownloadManager.query(query);
+                                    if (c.moveToFirst()) {
+                                        context.unregisterReceiver(mBroadcastReceiver);
+
+                                        int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                                        // 下载失败也会返回这个广播，所以要判断下是否真的下载成功
+                                        if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+                                            // 获取下载好的 apk 路径
+                                            String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+                                            // 提示用户安装
+                                            promptInstall(Uri.parse("file://" + uriString));
+                                        }
+                                    }
+                                }
+                            };
+                            context.registerReceiver(mBroadcastReceiver, new IntentFilter( DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+                        }
+                    });
+                    b.show();
+                }
+                break;
+                case appdefine.MSG_LOGIN_CONNECT_SUCCESS: {
+                    stopTimer();
+                }
+                break;
+                case appdefine.MSG_LOGIN_CONNECT_FAIL: {
+                    stopTimer();
+                    cancel_progressdialog();
+                    AlertDialog.Builder b = new AlertDialog.Builder(LoginActivity.this);
+                    b.setIcon(R.drawable.ic_dialog_alert_holo_light);
+                    b.setTitle(getString(R.string.warning));
+                    b.setMessage(getString(R.string.login_alert_connect_fail));
+                    b.setNegativeButton(getString(R.string.ok) , new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick( DialogInterface arg0, int arg1)
+                        {
+                            arg0.dismiss();
+                        }
+                    });
+                    b.show();
                 }
                 break;
                 default:

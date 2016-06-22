@@ -224,6 +224,8 @@
     <string name="warning">Warning</string>
     <string name="login_unknown_error">Unknown error, please contact manager</string>
     <string name="login_alert_non_setting_address">Please setting FiWo address first !</string>
+    <string name="login_alert_connect_fail">Connect Failed !</string>
+    <string name="login_first_use_message">First use ?\nPrease press this to setting</string>
     <!-- network dlg strings -->
     <string name="network_server_address">FiWo Server Address</string>
     <string name="network_server_address_message">Please enter FiWo Server Address</string>

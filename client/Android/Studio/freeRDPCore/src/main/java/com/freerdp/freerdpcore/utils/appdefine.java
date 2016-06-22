@@ -19,6 +19,11 @@ public class appdefine {
     public static final int MSG_LOGIN_GET_CLIENT_SUCCESS = 0x101002;
     public static final int MSG_LOGIN_GET_CLIENT_ERROR = 0x101003;
     public static final int MSG_LOGIN_GET_DOMAIN = 0x101004;
+    public static final int MSG_LOGIN_NEED_UPGRADE = 0x101005;
+    public static final int MSG_LOGIN_PROCESS_LOGIN = 0x101006;
+    public static final int MSG_LOGIN_CONNECT_SUCCESS = 0x101007;
+    public static final int MSG_LOGIN_CONNECT_FAIL = 0x101008;
+
 
     public static final int MSG_DESKPOOL_GET_PUBLIC_SUCCESS = 0x102001;
     public static final int MSG_DESKPOOL_GET_PUBLIC_NON_CONTENT = 0x102002;
