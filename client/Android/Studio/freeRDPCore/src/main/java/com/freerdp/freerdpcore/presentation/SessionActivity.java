@@ -34,6 +34,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -554,7 +555,8 @@ public class SessionActivity extends ActionBarActivity implements
 			/*sName += "(";
 			sName += jsonConnect.getString("ip");
 			sName += ")";*/
-			setTitle("FiWo Remote Desktop Client");
+			ActionBar actionBar = this.getSupportActionBar();
+			actionBar.setTitle("FiWo Remote Desktop Client");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

@@ -135,9 +135,11 @@ public class FiwoServerSetting extends Dialog implements
     public void resetUIStatus(){
         ImageView imgStatus = (ImageView) findViewById(R.id.ImgViewFiwoServerConnectStatus);
         imgStatus.setVisibility(View.INVISIBLE);
+        editFiwoServerAddr.setError(null);
         btnFinish.setBackgroundResource(R.drawable.btn_bg_grey);
         btnFinish.setEnabled(false);
         bHandshakeResponse = Boolean.FALSE;
+
     }
 
     public void processEnterKeyEvent(){
@@ -310,7 +312,6 @@ public class FiwoServerSetting extends Dialog implements
                     sFiWoUpgradeName = jsonAPPInfo.getString("androidName");
                 if (jsonAPPInfo.has("androidVersion"))
                     sFiWoAppVersion = jsonAPPInfo.getString("androidVersion");
-
 
                 if(mHandler != null)
                 {

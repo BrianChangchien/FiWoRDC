@@ -321,9 +321,9 @@ public class LoginActivity extends Activity{
         edtPassword = (EditText) findViewById(R.id.editPassword);
 
         edtAccount.setHint(R.string.account);
-        edtAccount.setText("Anson");
+        edtAccount.setText("Fiwotest01");
         edtPassword.setHint(R.string.password);
-        edtPassword.setText("Aa12345678");
+        edtPassword.setText("Foxconn123");
 
         tipWindow = new TooltipWindow(LoginActivity.this);
 

@@ -5,6 +5,8 @@
   		<item name="android:listSeparatorTextViewStyle">@style/SettingsCategory</item>
     </style>
     <style name="Theme.Main" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="actionBarSize">34dip</item>
+        <item name="android:actionBarSize">34dip</item>
     </style>
     <style name="SettingsCategory">
         <item name="android:layout_width">match_parent</item>
