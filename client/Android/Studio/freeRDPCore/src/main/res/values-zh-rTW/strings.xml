@@ -14,13 +14,13 @@
     <string name="menu_app_settings">設置</string>
     <!-- Bookmark menu items -->
     <string name="menu_title_bookmark">操作</string>
-    <string name="menu_connect">连接</string>
+    <string name="menu_connect">連線</string>
     <string name="menu_edit">编辑</string>
     <string name="menu_delete">删除</string>
     <!-- Session menu items -->
     <string name="menu_sys_keyboard">鍵盤</string>
     <string name="menu_ext_keyboard">功能鍵</string>
-    <string name="menu_touch_pointer">觸控鼠標</string>
+    <string name="menu_touch_pointer">觸控滑鼠</string>
     <string name="menu_home">主目录</string>
     <string name="menu_disconnect">中斷連線</string>
     <!-- List section headers -->
@@ -141,18 +141,18 @@
     <!-- Error message strings -->
     <string name="error_bookmark_incomplete_title">不保存即退出？</string>
     <string name="error_bookmark_incomplete">点击 “继续” 继续编辑，点击 "取消" 放弃当前更改</string>
-    <string name="error_connection_failure">建立连接失败！</string>
+    <string name="error_connection_failure">建立連接失敗！</string>
     <!-- Info message strings -->
     <string name="info_capabilities_changed">由于主机不支持您的设置所以显示设置已经修改为适应主机的设置！</string>
     <string name="info_reset_success">清除证书缓存成功！</string>
     <string name="info_reset_failed">清楚证书缓存失败！</string>
     <!-- Dialog strings -->
-    <string name="dlg_title_verify_certificate">证书验证</string>
-    <string name="dlg_msg_verify_certificate">未能验证远程主机证书的安全性，是否连接？</string>
+    <string name="dlg_title_verify_certificate">憑證驗證</string>
+    <string name="dlg_msg_verify_certificate">未能驗證遠程主機憑證的安全性，是否連接？</string>
     <string name="dlg_title_credentials">请输入您的证书</string>
     <string name="dlg_title_create_shortcut">创建快捷方式</string>
     <string name="dlg_msg_create_shortcut">快捷方式名称：</string>
-    <string name="dlg_msg_connecting">连接中 &#8230;</string>
+    <string name="dlg_msg_connecting">連接中 &#8230;</string>
     <string name="dlg_msg_logging_in">正在登录 &#8230;</string>
     <string name="dlg_title_about">关于aFreeRDP</string>
     <string name="dlg_title_create_bookmark_after_qc">是否保存连接设置？</string>
@@ -201,4 +201,5 @@
     <string name="deskpool_select">選擇桌面池</string>
     <string name="deskpool_private_vm">私有虛擬機</string>
     <string name="deskpool_public_vm">公有桌面池</string>
+    <string name="deskpool_connect">連線</string>
 </resources>

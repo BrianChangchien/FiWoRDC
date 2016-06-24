@@ -201,4 +201,5 @@
     <string name="deskpool_select">选择桌面池</string>
     <string name="deskpool_private_vm">私有虚拟机</string>
     <string name="deskpool_public_vm">公有桌面池</string>
+    <string name="deskpool_connect">连接</string>
 </resources>

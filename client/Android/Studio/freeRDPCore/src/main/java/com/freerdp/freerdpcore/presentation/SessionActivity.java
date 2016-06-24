@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -450,10 +451,15 @@ public class SessionActivity extends ActionBarActivity implements
 		}
 
 		this.setContentView(R.layout.session);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+
 		if (hasHardwareMenuButton()) {
 			this.getSupportActionBar().hide();
 		} else
 			this.getSupportActionBar().show();
+
+		ActionBar actionBar = this.getSupportActionBar();
+		actionBar.setTitle("FiWo Remote Desktop Client");
 
 		Log.v(TAG, "Session.onCreate");
 
@@ -548,19 +554,19 @@ public class SessionActivity extends ActionBarActivity implements
 
 		mClipboardManager = ClipboardManagerProxy.getClipboardManager(this);
 		mClipboardManager.addClipboardChangedListener(this);
+		/*
 		try {
 			JSONObject jsonConnect = new JSONObject(getIntent().getStringExtra("connectObj"));
 			String sName = "FiWoRDC : ";
 			sName += jsonConnect.getString("osName");
-			/*sName += "(";
+			sName += "(";
 			sName += jsonConnect.getString("ip");
-			sName += ")";*/
-			ActionBar actionBar = this.getSupportActionBar();
-			actionBar.setTitle("FiWo Remote Desktop Client");
+			sName += ")";
+
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
+		*/
 	}
 
 	@Override
@@ -1142,8 +1148,7 @@ public class SessionActivity extends ActionBarActivity implements
 		// set message
 		String msg = getResources().getString(
 				R.string.dlg_msg_verify_certificate);
-		msg = msg + "\n\nSubject: " + subject + "\nIssuer: " + issuer
-				+ "\nFingerprint: " + fingerprint;
+		//msg = msg + "\n\nSubject: " + subject + "\nIssuer: " + issuer	+ "\nFingerprint: " + fingerprint;
 		dlgVerifyCertificate.setMessage(msg);
 
 		// start dialog in UI thread
@@ -1173,8 +1178,7 @@ public class SessionActivity extends ActionBarActivity implements
 		// set message
 		String msg = getResources().getString(
 				R.string.dlg_msg_verify_certificate);
-		msg = msg + "\n\nSubject: " + subject + "\nIssuer: " + issuer
-				+ "\nFingerprint: " + fingerprint;
+		//msg = msg + "\n\nSubject: " + subject + "\nIssuer: " + issuer	+ "\nFingerprint: " + fingerprint;
 		dlgVerifyCertificate.setMessage(msg);
 
 		// start dialog in UI thread

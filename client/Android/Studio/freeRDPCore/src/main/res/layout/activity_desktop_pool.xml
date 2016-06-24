@@ -35,8 +35,8 @@
                     android:background="#00000000"
                     android:src="@drawable/icon_info"
                     android:clickable="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp" />
             </LinearLayout>
             <TextView
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textColor="#fff"
-                android:textSize="20dp" />
+                android:textSize="40dp" />
 
             <GridView
                 android:numColumns="auto_fit"

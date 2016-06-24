@@ -321,9 +321,9 @@ public class LoginActivity extends Activity{
         edtPassword = (EditText) findViewById(R.id.editPassword);
 
         edtAccount.setHint(R.string.account);
-        edtAccount.setText("Fiwotest01");
+        //edtAccount.setText("Fiwotest01");
         edtPassword.setHint(R.string.password);
-        edtPassword.setText("Foxconn123");
+        //edtPassword.setText("Foxconn123");
 
         tipWindow = new TooltipWindow(LoginActivity.this);
 
@@ -425,14 +425,20 @@ public class LoginActivity extends Activity{
 
     private void process_login() {
 
+        edtAccount.setError(null);
+        edtPassword.setError(null);
         if (Boolean.FALSE.equals(bCheckVersion))
             show_process_dialog(getString(R.string.loading),false);
 
         if (edtAccount.getText().toString().equals("")) {
+            cancel_progressdialog();
+            edtAccount.requestFocus();
             edtAccount.setError(this.getString(R.string.account_empty));
             return;
         }
         if (edtPassword.getText().toString().equals("")) {
+            cancel_progressdialog();
+            edtPassword.requestFocus();
             edtPassword.setError(this.getString(R.string.password_empty));
             return;
         }

@@ -241,4 +241,5 @@
     <string name="deskpool_select">Desktop pool selection</string>
     <string name="deskpool_private_vm">Private</string>
     <string name="deskpool_public_vm">Public</string>
+    <string name="deskpool_connect">Connect</string>
 </resources>
