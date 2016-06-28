@@ -171,6 +171,7 @@ public class FiwoServerSetting extends Dialog implements
 
         editFiwoServerAddr = (EditText) findViewById(R.id.editFIWOaddress);
         editFiwoServerAddr.setText(FiwoIP);
+        //editFiwoServerAddr.setText("10.67.54.15");
         /*
         editFiwoServerAddr.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {

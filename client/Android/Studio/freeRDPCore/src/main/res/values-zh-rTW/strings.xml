@@ -186,6 +186,7 @@
     <string name="login_alert_non_setting_address">請先設定FiWo伺服器位置!</string>
     <string name="login_alert_connect_fail">連線失敗 !</string>
     <string name="login_first_use_message">還沒設定連線?\n請按這裡</string>
+    <string name="login_alert_download_fail">下載新版本失敗, 請重新下載!</string>
     <!-- network dlg strings -->
     <string name="network_server_address">FiWo伺服器位置</string>
     <string name="network_server_address_message">請輸入FiWo伺服器位置</string>

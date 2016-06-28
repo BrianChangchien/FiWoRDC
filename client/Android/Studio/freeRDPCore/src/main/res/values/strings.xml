@@ -226,6 +226,7 @@
     <string name="login_alert_non_setting_address">Please setting FiWo address first !</string>
     <string name="login_alert_connect_fail">Connect Failed !</string>
     <string name="login_first_use_message">First use ?\nPrease press this to setting</string>
+    <string name="login_alert_download_fail">Download new version Failed, Please try again !</string>
     <!-- network dlg strings -->
     <string name="network_server_address">FiWo Server Address</string>
     <string name="network_server_address_message">Please enter FiWo Server Address</string>

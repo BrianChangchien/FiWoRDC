@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import java.io.File;
@@ -36,6 +37,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.provider.ContactsContract;
 import android.text.Editable;
@@ -64,6 +66,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
 
 import com.freerdp.freerdpcore.R;
 import com.freerdp.freerdpcore.application.GlobalApp;
@@ -77,6 +81,11 @@ import com.freerdp.freerdpcore.utils.GlobelSetting;
 import com.freerdp.freerdpcore.utils.SeparatedListAdapter;
 import com.freerdp.freerdpcore.utils.TooltipWindow;
 import com.freerdp.freerdpcore.utils.appdefine;
+import com.thin.downloadmanager.DefaultRetryPolicy;
+import com.thin.downloadmanager.DownloadRequest;
+import com.thin.downloadmanager.DownloadStatusListener;
+import com.thin.downloadmanager.DownloadStatusListenerV1;
+import com.thin.downloadmanager.ThinDownloadManager;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -113,7 +122,7 @@ public class LoginActivity extends Activity{
     private JSONArray arrClient;
     private static MyHandler mHandler;
 
-    private DownloadManager mDownloadManager;
+    private DownloadManager mDownloadManager=null;
     private long enqueueId;
     private BroadcastReceiver mBroadcastReceiver;
     private String sFiWoUpgradePath, sFiWoUpgradeName="", sFiWoAppVersion="";
@@ -131,7 +140,11 @@ public class LoginActivity extends Activity{
     private Boolean bSendRequestResponse = Boolean.FALSE;
 
     TooltipWindow tipWindow;
+    private ThinDownloadManager downloadManager;
+    MyDownloadDownloadStatusListenerV1
+            myDownloadStatusListener = new MyDownloadDownloadStatusListenerV1();
 
+    int downloadId1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +168,11 @@ public class LoginActivity extends Activity{
 
         if(mHandler == null)
             mHandler = new MyHandler();
+
+        downloadManager = new ThinDownloadManager();
+
         process_ui();
+
     }
 
     @Override
@@ -278,7 +295,7 @@ public class LoginActivity extends Activity{
                         b.show();
                     }
                     else
-                        process_login();
+                        process_version_upgrade();;
 
                     return true;
                 }
@@ -304,7 +321,7 @@ public class LoginActivity extends Activity{
                         b.show();
                     }
                     else
-                        process_login();
+                        process_version_upgrade();
 
                     return true;
                 }
@@ -670,7 +687,9 @@ public class LoginActivity extends Activity{
     private Runnable ThreadHandshake = new Runnable() {
         public void run() {
             // 運行網路連線的程式
+
             sendHttpGetUpgradeInfo();
+
         }
     };
 
@@ -721,6 +740,7 @@ public class LoginActivity extends Activity{
                 {
                     Message msg1 = new Message();
                     boolean bUpdrade = false;
+
                     if (sFiWoAppVersion.equals("") || sFiWoUpgradeName.equals(""))
                         bUpdrade = false;
                     else
@@ -830,7 +850,11 @@ public class LoginActivity extends Activity{
         pDialog.setCancelable(b_can_cancel);
         pDialog.show();
     }
-
+    public void update_process_dialog(String sMessage)
+    {
+        if(pDialog != null && pDialog.isShowing())
+            pDialog.setMessage(sMessage);
+    }
     private void cancel_progressdialog()
     {
         if(pDialog != null)
@@ -870,18 +894,43 @@ public class LoginActivity extends Activity{
         }
         return "0.0.0.0";
     }
+    public static Boolean isSDCardPresent(){
+        return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_REMOVED);
+    }
 
     public void downloadNewVersion() {
-        mDownloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        String sAPKDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS) + "/" + sFiWoUpgradeName;
-        File f = new File(sAPKDownloadPath);
-        Boolean deleted = f.delete();
-        // apkDownloadUrl 是 apk 的下载地址
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(sFiWoUpgradePath+sFiWoUpgradeName));
 
-        request.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, sFiWoUpgradeName);
+        File filesDir = this.getExternalCacheDir();
+        filesDir.mkdir();
+        Uri downloadUri = Uri.parse(sFiWoUpgradePath+sFiWoUpgradeName);
+        Uri destinationUri = Uri.parse(getExternalCacheDir().toString() + "/" + sFiWoUpgradeName);
+        final DownloadRequest downloadRequest = new DownloadRequest(downloadUri)
+                .setDestinationURI(destinationUri).setPriority(DownloadRequest.Priority.LOW)
+                .setDownloadContext("Download FiWoRDC.apk")
+                .setStatusListener(myDownloadStatusListener);
+
+        downloadId1 = downloadManager.add(downloadRequest);
+        /*
+        mDownloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        Toast.makeText(LoginActivity.this, mDownloadManager.toString(), Toast.LENGTH_SHORT).show();
+        Boolean SDCardEnabled = isSDCardPresent();
+        Toast.makeText(LoginActivity.this, "SDCardEnabled:" + String.valueOf(SDCardEnabled), Toast.LENGTH_SHORT).show();
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(sFiWoUpgradePath+sFiWoUpgradeName));
+        request.setTitle("FiWoRDC");
+        request.setDescription("FiWoRDC.apk");
+
+        if (Boolean.TRUE.equals(SDCardEnabled)) {
+            String sAPKDownloadPath = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS) + "/" + sFiWoUpgradeName;
+            File f = new File(sAPKDownloadPath);
+            Boolean deleted = f.delete();
+            request.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, sFiWoUpgradeName);
+        }
+        else
+            request.setDestinationUri(null);
+
         // 获取下载队列 id
         enqueueId = mDownloadManager.enqueue(request);
+        */
     }
     private void promptInstall(Uri data) {
         Intent promptInstall = new Intent(Intent.ACTION_VIEW)
@@ -938,6 +987,65 @@ public class LoginActivity extends Activity{
         count = 0;
     }
 
+    private String getBytesDownloaded(int progress, long totalBytes) {
+        //Greater than 1 MB
+        long bytesCompleted = (progress * totalBytes)/100;
+        if (totalBytes >= 1000000) {
+            return (""+(String.format("%.1f", (float)bytesCompleted/1000000))+ "/"+ ( String.format("%.1f", (float)totalBytes/1000000)) + "MB");
+        } if (totalBytes >= 1000) {
+            return (""+(String.format("%.1f", (float)bytesCompleted/1000))+ "/"+ ( String.format("%.1f", (float)totalBytes/1000)) + "Kb");
+
+        } else {
+            return ( ""+bytesCompleted+"/"+totalBytes );
+        }
+    }
+
+    class MyDownloadDownloadStatusListenerV1 implements DownloadStatusListenerV1 {
+
+        @Override
+        public void onDownloadComplete(DownloadRequest request) {
+            final int id = request.getDownloadId();
+            if (id == downloadId1) {
+                //mProgress1Txt.setText(request.getDownloadContext() + " id: "+id+" Completed");
+                cancel_progressdialog();
+                //File filesDir = getExternalFilesDir("");
+                promptInstall(Uri.parse("file://" + getExternalCacheDir().toString() + "/" + sFiWoUpgradeName));
+
+            }
+        }
+
+        @Override
+        public void onDownloadFailed(DownloadRequest request, int errorCode, String errorMessage) {
+            final int id = request.getDownloadId();
+            if (id == downloadId1) {
+                cancel_progressdialog();
+                AlertDialog.Builder b = new AlertDialog.Builder(LoginActivity.this);
+                b.setIcon(R.drawable.ic_dialog_alert_holo_light);
+                b.setTitle(getString(R.string.warning));
+                b.setMessage(getString(R.string.login_alert_download_fail));
+                b.setNegativeButton(getString(R.string.ok) , new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick( DialogInterface arg0, int arg1)
+                    {
+                        arg0.dismiss();
+                    }
+                });
+                b.show();
+            }
+        }
+
+        @Override
+        public void onProgress(DownloadRequest request, long totalBytes, long downloadedBytes, int progress) {
+            int id = request.getDownloadId();
+
+            if (id == downloadId1) {
+                String sMsg = getString(R.string.network_downloading);
+                sMsg += "    " + getBytesDownloaded(progress, totalBytes);
+                update_process_dialog(sMsg);
+            }
+        }
+    }
     // -----------------------------------------------------------
     private class MyHandler extends Handler
     {
@@ -1027,6 +1135,7 @@ public class LoginActivity extends Activity{
                         {
                             downloadNewVersion();
                             show_process_dialog(getString(R.string.network_downloading), false);
+                            /*
                             mBroadcastReceiver  = new BroadcastReceiver() {
                                 @Override
                                 public void onReceive(Context context, Intent intent) {
@@ -1055,6 +1164,7 @@ public class LoginActivity extends Activity{
                                 }
                             };
                             context.registerReceiver(mBroadcastReceiver, new IntentFilter( DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+                            */
                         }
                     });
                     b.show();

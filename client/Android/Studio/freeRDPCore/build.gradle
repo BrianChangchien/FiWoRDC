@@ -22,4 +22,5 @@ dependencies {
     compile files('libs/java-json.jar')
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+    compile 'com.mani:ThinDownloadManager:1.2.5'
 }
