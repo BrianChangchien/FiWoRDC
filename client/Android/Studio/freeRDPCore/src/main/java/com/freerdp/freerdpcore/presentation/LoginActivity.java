@@ -145,6 +145,7 @@ public class LoginActivity extends Activity{
             myDownloadStatusListener = new MyDownloadDownloadStatusListenerV1();
 
     int downloadId1;
+    private Boolean bLoginSuccess = Boolean.FALSE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,7 +190,22 @@ public class LoginActivity extends Activity{
 
         if(mHandler == null)
             mHandler = new MyHandler();
+        SharedPreferences userDetails = context.getSharedPreferences("FiWoServer", Context.MODE_PRIVATE);
+        String sUserLogin = userDetails.getString("Login_Success", "");
 
+        EditText edtAccount = (EditText) findViewById(R.id.editAccount);
+        EditText edtAccountPass = (EditText) findViewById(R.id.editPassword);
+        if (Boolean.TRUE.toString().equals(sUserLogin)) {
+            bLoginSuccess = Boolean.TRUE;
+            String sAccount = userDetails.getString("Account_login", "");
+            sFiWoSvrAddr = userDetails.getString("FiwoServerAddress", "");
+            edtAccountPass.setText("");
+            edtAccount.setText(sAccount);
+        }else{
+            bLoginSuccess = Boolean.FALSE;
+            edtAccountPass.setText("");
+            edtAccount.setText("");
+        }
         if (fd != null) {
             fd.onResume();
         }
@@ -242,12 +258,13 @@ public class LoginActivity extends Activity{
             @Override
             public void onClick( DialogInterface dialog, int which)
             {
+                /*
                 SharedPreferences keyValues = context.getSharedPreferences(("FiWoServer"), Context.MODE_PRIVATE);
                 SharedPreferences.Editor keyValuesEditor = keyValues.edit();
                 keyValuesEditor.clear();
                 keyValuesEditor.putString("ip", "");
                 keyValuesEditor.commit();
-
+*/
                 System.gc();
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
@@ -380,6 +397,11 @@ public class LoginActivity extends Activity{
                 // now you can use the 'result' on your activity
                 sFiWoSvrAddr = FiWoAddr;
                 sDomain = result;
+                SharedPreferences keyValues = context.getSharedPreferences(("FiWoServer"), Context.MODE_PRIVATE);
+                SharedPreferences.Editor keyValuesEditor = keyValues.edit();
+                keyValuesEditor.putString("FiwoServerAddress", sFiWoSvrAddr);
+                keyValuesEditor.putString("FiwoDomain", sDomain);
+                keyValuesEditor.commit();
 
                 if (mHandler != null) {
                     Message msg1 = new Message();
@@ -426,6 +448,21 @@ public class LoginActivity extends Activity{
             }
         });
         btn_login.setEnabled(false);
+
+        SharedPreferences userDetails = context.getSharedPreferences("FiWoServer", Context.MODE_PRIVATE);
+        String sUserLogin = userDetails.getString("Login_Success", "");
+
+        if (Boolean.TRUE.toString().equals(sUserLogin)) {
+            sFiWoSvrAddr = userDetails.getString("FiwoServerAddress", "");
+            sDomain = userDetails.getString("FiwoDomain","");
+
+            if(mHandler != null)
+            {
+                Message msg1 = new Message();
+                msg1.what = appdefine.MSG_UPDATE_SPINNER;
+                mHandler.sendMessage(msg1);
+            }
+        }
 
         if (sFiWoSvrAddr.isEmpty() || sFiWoSvrAddr.equals("")){
             final View anchor = findViewById(R.id.imgBtn_Network);
@@ -566,7 +603,16 @@ public class LoginActivity extends Activity{
         try {
             response = client.execute(httpPost);
             int nstate_code = response.getStatusLine().getStatusCode();
+            SharedPreferences keyValues = context.getSharedPreferences(("FiWoServer"), Context.MODE_PRIVATE);
+            SharedPreferences.Editor keyValuesEditor = keyValues.edit();
+            //keyValuesEditor.clear();
             if ((200 == nstate_code) || 204 == nstate_code) {
+
+                bLoginSuccess = Boolean.TRUE;
+                keyValuesEditor.putString("Account_login", edtAccount.getText().toString());
+                keyValuesEditor.putString("Login_Success", bLoginSuccess.toString());
+                keyValuesEditor.commit();
+
                 HttpEntity resEntity = response.getEntity();
                 if (resEntity != null) {
                     result = EntityUtils.toString(resEntity, "UTF-8");
@@ -582,6 +628,10 @@ public class LoginActivity extends Activity{
             }
             else if (401 == nstate_code)
             {
+                bLoginSuccess = Boolean.FALSE;
+                keyValuesEditor.putString("Account_login", "");
+                keyValuesEditor.putString("Login_Success", bLoginSuccess.toString());
+                keyValuesEditor.commit();
                 if(mHandler != null) {
                     Message msg1 = new Message();
                     msg1.what = appdefine.MSG_LOGIN_AUTH_ERROR;
@@ -589,6 +639,10 @@ public class LoginActivity extends Activity{
                 }
             }
             else {
+                bLoginSuccess = Boolean.FALSE;
+                keyValuesEditor.putString("Account_login", "");
+                keyValuesEditor.putString("Login_Success", bLoginSuccess.toString());
+                keyValuesEditor.commit();
                 if(mHandler != null) {
                     Message msg1 = new Message();
                     msg1.what = appdefine.MSG_LOGIN_GET_CLIENT_ERROR;
