@@ -462,13 +462,14 @@ public class SessionActivity extends ActionBarActivity implements
 			decorView.setOnSystemUiVisibilityChangeListener (new View.OnSystemUiVisibilityChangeListener() {
 				@Override
 				public void onSystemUiVisibilityChange(int visibility) {
-					if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-						decorView.setSystemUiVisibility(
-								View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-										| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-										| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-										| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-					}
+                    decorView.setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                    | View.SYSTEM_UI_FLAG_LOW_PROFILE
+                                    | View.SYSTEM_UI_FLAG_IMMERSIVE);
 				}
 			});
 
@@ -619,7 +620,13 @@ public class SessionActivity extends ActionBarActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		final int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+		final int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE;
 		final View decorView = getWindow().getDecorView();
 		decorView.setSystemUiVisibility(uiOptions);
 		Log.v(TAG, "Session.onResume");
@@ -1288,8 +1295,13 @@ public class SessionActivity extends ActionBarActivity implements
 	}
 
 	public void onSessionViewRightTouch(int x, int y, boolean down) {
+        /*
 		if (!down)
 			toggleMouseButtons = !toggleMouseButtons;
+			*/
+        Point p = mapScreenCoordToSessionCoord(x, y);
+        LibFreeRDP.sendCursorEvent(session.getInstance(), p.x, p.y,
+                Mouse.getRightButtonEvent(down));
 	}
 
 	@Override

@@ -48,7 +48,7 @@ public class SessionView extends View
 	private int touchPointerPaddingHeight = 0;
 	
 	private SessionViewListener sessionViewListener = null;
-	
+
 	public static final float MAX_SCALE_FACTOR = 3.0f;
 	public static final float MIN_SCALE_FACTOR = 1.0f;
 	private static final float SCALE_FACTOR_DELTA = 0.0001f;
@@ -113,11 +113,18 @@ public class SessionView extends View
 
         public boolean onSingleTapUp(MotionEvent e) {
         	// send single click
+
         	MotionEvent mappedEvent = mapTouchEvent(e);
-			sessionViewListener.onSessionViewBeginTouch();
-        	sessionViewListener.onSessionViewLeftTouch((int)mappedEvent.getX(), (int)mappedEvent.getY(), true);
-        	sessionViewListener.onSessionViewLeftTouch((int)mappedEvent.getX(), (int)mappedEvent.getY(), false);
-        	sessionViewListener.onSessionViewEndTouch();
+            sessionViewListener.onSessionViewBeginTouch();
+			if (MotionEvent.BUTTON_PRIMARY ==mappedEvent.getButtonState()) {
+                sessionViewListener.onSessionViewLeftTouch((int) mappedEvent.getX(), (int) mappedEvent.getY(), true);
+                sessionViewListener.onSessionViewLeftTouch((int) mappedEvent.getX(), (int) mappedEvent.getY(), false);
+
+            }else if (MotionEvent.BUTTON_SECONDARY ==mappedEvent.getButtonState()){
+                sessionViewListener.onSessionViewRightTouch((int)mappedEvent.getX(), (int)mappedEvent.getY(), true);
+                sessionViewListener.onSessionViewRightTouch((int)mappedEvent.getX(), (int)mappedEvent.getY(), false);
+            }
+            sessionViewListener.onSessionViewEndTouch();
             return true;
         }		
 	}
