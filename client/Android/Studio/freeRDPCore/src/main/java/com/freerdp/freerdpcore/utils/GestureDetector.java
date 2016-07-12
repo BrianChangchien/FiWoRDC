@@ -523,9 +523,6 @@ public class GestureDetector {
         case MotionEvent.ACTION_CANCEL:
             cancel();
             break;
-        case MotionEvent.ACTION_SCROLL:
-            cancel();
-            break;
         }
         return handled;
     }

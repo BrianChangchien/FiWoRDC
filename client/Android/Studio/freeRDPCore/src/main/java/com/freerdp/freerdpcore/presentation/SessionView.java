@@ -11,6 +11,7 @@ package com.freerdp.freerdpcore.presentation;
 
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -340,12 +341,25 @@ public class SessionView extends View
 		mappedEvent.setLocation(coordinates[0], coordinates[1]);
 		return mappedEvent;
 	}
-
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {				
 		boolean res = gestureDetector.onTouchEvent(event);
 		res |= doubleGestureDetector.onTouchEvent(event);			
 		return res;
 	}
-	
+	@Override
+	public boolean onGenericMotionEvent(MotionEvent event) {
+        if (0 != (event.getSource() & InputDevice.SOURCE_CLASS_POINTER))
+        {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_SCROLL:
+                    //sessionViewListener.onSessionViewEndTouch();
+                    sessionViewListener.onSessionViewScroll(true);
+                    return true;
+            }
+        }
+		return super.onGenericMotionEvent(event);
+
+	}
+
 }

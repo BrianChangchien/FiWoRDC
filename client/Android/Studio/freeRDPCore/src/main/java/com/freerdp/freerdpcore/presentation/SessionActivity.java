@@ -12,6 +12,7 @@ package com.freerdp.freerdpcore.presentation;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -458,6 +459,7 @@ public class SessionActivity extends ActionBarActivity implements
 
 		if (/*hasHardwareMenuButton()*/Boolean.TRUE) {
 			this.getSupportActionBar().hide();
+
 			final View decorView = getWindow().getDecorView();
 			decorView.setOnSystemUiVisibilityChangeListener (new View.OnSystemUiVisibilityChangeListener() {
 				@Override
@@ -472,8 +474,7 @@ public class SessionActivity extends ActionBarActivity implements
                                     | View.SYSTEM_UI_FLAG_IMMERSIVE);
 				}
 			});
-
-			/*
+/*
             if(Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
                 View v = this.getWindow().getDecorView();
                 v.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -722,12 +723,20 @@ public class SessionActivity extends ActionBarActivity implements
 				JSONObject jLoginInfo = new JSONObject(intent.getStringExtra("loginObj"));
 
 				bookmark = new ManualBookmark();
+
 				bookmark.<ManualBookmark>get().setHostname(
 						jsonConnect.getString("ip"));
 				bookmark.<ManualBookmark>get().setPort(jsonConnect.getInt("port"));
 				bookmark.<ManualBookmark>get().setDomain(jLoginInfo.getString("domain"));
 				bookmark.<ManualBookmark>get().setUsername(jLoginInfo.getString("account"));
 				bookmark.<ManualBookmark>get().setPassword(jLoginInfo.getString("password"));
+				/*
+				bookmark.<ManualBookmark>get().setHostname(
+						"10.62.8.246");
+				bookmark.<ManualBookmark>get().setPort(3389);
+
+				bookmark.<ManualBookmark>get().setUsername("User");
+				bookmark.<ManualBookmark>get().setPassword("123456");*/
 				if (bookmark != null)
 					connect(bookmark);
 				else
@@ -984,6 +993,7 @@ public class SessionActivity extends ActionBarActivity implements
 	// combinations (like Win + E to open the explorer).
 	@Override
 	public boolean onKeyDown(int keycode, KeyEvent event) {
+		//Toast.makeText(SessionActivity.this, "Keyboard clicked => " + String.valueOf(keycode), Toast.LENGTH_SHORT).show();
 		return keyboardMapper.processAndroidKeyEvent(event);
 	}
 

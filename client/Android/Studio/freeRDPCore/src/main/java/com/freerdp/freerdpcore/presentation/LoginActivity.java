@@ -201,6 +201,7 @@ public class LoginActivity extends Activity{
             sFiWoSvrAddr = userDetails.getString("FiwoServerAddress", "");
             edtAccountPass.setText("");
             edtAccount.setText(sAccount);
+
         }else{
             bLoginSuccess = Boolean.FALSE;
             edtAccountPass.setText("");

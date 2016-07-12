@@ -290,13 +290,13 @@ public class KeyboardMapper
 		keymapAndroid[KeyEvent.KEYCODE_DEL] = VK_BACK;
 		keymapAndroid[KeyEvent.KEYCODE_ENTER] = VK_RETURN;
 		keymapAndroid[KeyEvent.KEYCODE_SPACE] = VK_SPACE;
-//		keymapAndroid[KeyEvent.KEYCODE_SHIFT_LEFT] = VK_LSHIFT;
-//		keymapAndroid[KeyEvent.KEYCODE_SHIFT_RIGHT] = VK_RSHIFT;
+		keymapAndroid[KeyEvent.KEYCODE_SHIFT_LEFT] = VK_LSHIFT;
+		keymapAndroid[KeyEvent.KEYCODE_SHIFT_RIGHT] = VK_RSHIFT;
 
-//		keymapAndroid[KeyEvent.KEYCODE_DPAD_DOWN] = VK_DOWN;
-//		keymapAndroid[KeyEvent.KEYCODE_DPAD_LEFT] = VK_LEFT;
-//		keymapAndroid[KeyEvent.KEYCODE_DPAD_RIGHT] = VK_RIGHT;
-//		keymapAndroid[KeyEvent.KEYCODE_DPAD_UP] = VK_UP;
+		keymapAndroid[KeyEvent.KEYCODE_DPAD_DOWN] = VK_DOWN;
+		keymapAndroid[KeyEvent.KEYCODE_DPAD_LEFT] = VK_LEFT;
+		keymapAndroid[KeyEvent.KEYCODE_DPAD_RIGHT] = VK_RIGHT;
+		keymapAndroid[KeyEvent.KEYCODE_DPAD_UP] = VK_UP;
 
 //		keymapAndroid[KeyEvent.KEYCODE_COMMA] = VK_OEM_COMMA;
 //		keymapAndroid[KeyEvent.KEYCODE_PERIOD] = VK_OEM_PERIOD;
@@ -311,7 +311,7 @@ public class KeyboardMapper
 //		keymapAndroid[KeyEvent.KEYCODE_BACKSLASH] = (KEY_FLAG_UNICODE | 92);
 //		keymapAndroid[KeyEvent.KEYCODE_COMMA] = (KEY_FLAG_UNICODE | 44);
 //		keymapAndroid[KeyEvent.KEYCODE_EQUALS] = (KEY_FLAG_UNICODE | 61);
-//		keymapAndroid[KeyEvent.KEYCODE_GRAVE] = (KEY_FLAG_UNICODE | 96);		
+//		keymapAndroid[KeyEvent.KEYCODE_GRAVE] = (KEY_FLAG_UNICODE | 96);
 //		keymapAndroid[KeyEvent.KEYCODE_LEFT_BRACKET] = (KEY_FLAG_UNICODE | 91);
 //		keymapAndroid[KeyEvent.KEYCODE_RIGHT_BRACKET] = (KEY_FLAG_UNICODE | 93);
 //		keymapAndroid[KeyEvent.KEYCODE_MINUS] = (KEY_FLAG_UNICODE | 45);
@@ -320,7 +320,7 @@ public class KeyboardMapper
 //		keymapAndroid[KeyEvent.KEYCODE_POUND] = (KEY_FLAG_UNICODE | 35);
 //		keymapAndroid[KeyEvent.KEYCODE_SEMICOLON] = (KEY_FLAG_UNICODE | 59);
 //		keymapAndroid[KeyEvent.KEYCODE_SLASH] = (KEY_FLAG_UNICODE | 47);
-//		keymapAndroid[KeyEvent.KEYCODE_STAR] = (KEY_FLAG_UNICODE | 42);		
+//		keymapAndroid[KeyEvent.KEYCODE_STAR] = (KEY_FLAG_UNICODE | 42);
 		
 		// special keys mapping
 		keymapExt = new int[256];
@@ -415,17 +415,56 @@ public class KeyboardMapper
 			// we only process down events
 			case KeyEvent.ACTION_UP:
 			{
-				return false;
+                if (event.isCtrlPressed()) {
+                    ctrlPressed = false;
+                    listener.processVirtualKey(VK_LCONTROL, false);
+                }
+                if (event.isShiftPressed()) {
+                    shiftPressed = false;
+                    listener.processVirtualKey(VK_LSHIFT, false);
+                }
+                if (event.isAltPressed()) {
+                    altPressed = false;
+                    listener.processVirtualKey(VK_LMENU, false);
+                }
+                return true;
 			}			
 			
 			case KeyEvent.ACTION_DOWN:
-			{	
-				boolean modifierActive = isModifierPressed();				
+			{
+                if (event.isMetaPressed()) {
+                    isWinLocked  = !isWinLocked;
+                    winPressed = !winPressed;
+                    listener.processVirtualKey(VK_LWIN | VK_EXT_KEY, winPressed);
+					winPressed = !winPressed;
+					listener.processVirtualKey(VK_LWIN | VK_EXT_KEY, winPressed);
+                }
+                if (event.isCtrlPressed())
+                {
+                    ctrlPressed = true;
+                    listener.processVirtualKey(VK_LCONTROL, true);
+                }
+                if (event.isShiftPressed())
+                {
+                    shiftPressed = true;
+                    listener.processVirtualKey(VK_LSHIFT, true);
+                }
+                if (event.isAltPressed())
+                {
+                    altPressed = true;
+                    listener.processVirtualKey(VK_LMENU, true);
+                }
+
+				boolean modifierActive = isModifierPressed();
 				// if a modifier is pressed we will send a VK event (if possible) so that key combinations will be 
 				// recognized correctly. Otherwise we will send the unicode key. At the end we will reset all modifiers
 				// and notifiy our listener.
 				int vkcode = getVirtualKeyCode(event.getKeyCode());
-				if((vkcode & KEY_FLAG_UNICODE) != 0)
+                int nChar = 0, vkey = 0;
+                Integer nKey = event.getKeyCode();
+                nChar = event.getUnicodeChar();
+
+                if((vkcode & KEY_FLAG_UNICODE) != 0)
 					listener.processUnicodeKey(vkcode & (~KEY_FLAG_UNICODE));
 				// if we got a valid vkcode send it - except for letters/numbers if a modifier is active
 				else if (vkcode > 0 && (event.getMetaState() & (KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON | KeyEvent.META_SYM_ON)) == 0)
@@ -440,11 +479,17 @@ public class KeyboardMapper
 					listener.processVirtualKey(vkcode, false);										
 					listener.processVirtualKey(VK_LSHIFT, false);
 				}
-				else if(event.getUnicodeChar() != 0) 
+				else if(event.getUnicodeChar() != 0){
 					listener.processUnicodeKey(event.getUnicodeChar());
-				else
-					return false;
-				 			
+                    if (nKey.equals(61))
+                        processCustomKeyEvent(42);
+                }
+				else {
+                    if (nKey.equals(112)){
+                        processCustomKeyEvent(45);
+                    }
+                    return false;
+                }
 				// reset any pending toggle states if a modifier was pressed
 				if(modifierActive)
 					resetModifierKeysAfterInput(false);
