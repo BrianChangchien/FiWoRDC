@@ -471,6 +471,23 @@ public class KeyboardMapper
 				{
 					listener.processVirtualKey(vkcode, true);
 					listener.processVirtualKey(vkcode, false);
+                    switch (nKey)
+                    {
+                        case KeyEvent.KEYCODE_DPAD_UP:
+                            processCustomKeyEvent(50);
+                            break;
+                        case KeyEvent.KEYCODE_DPAD_DOWN:
+                            processCustomKeyEvent(51);
+                            break;
+                        case KeyEvent.KEYCODE_DPAD_LEFT:
+                            processCustomKeyEvent(52);
+                            break;
+                        case KeyEvent.KEYCODE_DPAD_RIGHT:
+                            processCustomKeyEvent(69);
+                            break;
+                        default:
+                            break;
+                    }
 				}
 				else if(event.isShiftPressed() && vkcode != 0)
 				{
