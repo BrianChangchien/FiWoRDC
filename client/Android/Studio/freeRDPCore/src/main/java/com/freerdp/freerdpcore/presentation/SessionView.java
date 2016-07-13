@@ -354,7 +354,10 @@ public class SessionView extends View
             switch (event.getAction()) {
                 case MotionEvent.ACTION_SCROLL:
                     //sessionViewListener.onSessionViewEndTouch();
-                    sessionViewListener.onSessionViewScroll(true);
+					if (event.getAxisValue(MotionEvent.AXIS_VSCROLL) < 0.0f)
+						sessionViewListener.onSessionViewScroll(true);
+					else
+						sessionViewListener.onSessionViewScroll(false);
                     return true;
             }
         }

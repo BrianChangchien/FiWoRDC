@@ -481,13 +481,55 @@ public class KeyboardMapper
 				}
 				else if(event.getUnicodeChar() != 0){
 					listener.processUnicodeKey(event.getUnicodeChar());
-                    if (nKey.equals(61))
+                    if (nKey.equals(KeyEvent.KEYCODE_TAB))
                         processCustomKeyEvent(42);
                 }
 				else {
-                    if (nKey.equals(112)){
-                        processCustomKeyEvent(45);
-                    }
+					switch (nKey)
+					{
+						case KeyEvent.KEYCODE_FORWARD_DEL:
+							processCustomKeyEvent(45);
+							break;
+                        case KeyEvent.KEYCODE_F1:
+                            processCustomKeyEvent(30);
+                            break;
+						case KeyEvent.KEYCODE_F2:
+							processCustomKeyEvent(31);
+							break;
+                        case KeyEvent.KEYCODE_F3:
+                            processCustomKeyEvent(32);
+                            break;
+                        case KeyEvent.KEYCODE_F4:
+                            processCustomKeyEvent(33);
+                            break;
+                        case KeyEvent.KEYCODE_F5:
+                            processCustomKeyEvent(34);
+                            break;
+                        case KeyEvent.KEYCODE_F6:
+                            processCustomKeyEvent(35);
+                            break;
+                        case KeyEvent.KEYCODE_F7:
+                            processCustomKeyEvent(36);
+                            break;
+                        case KeyEvent.KEYCODE_F8:
+                            processCustomKeyEvent(37);
+                            break;
+                        case KeyEvent.KEYCODE_F9:
+                            processCustomKeyEvent(38);
+                            break;
+                        case KeyEvent.KEYCODE_F10:
+                            processCustomKeyEvent(39);
+                            break;
+                        case KeyEvent.KEYCODE_F11:
+                            processCustomKeyEvent(40);
+                            break;
+                        case KeyEvent.KEYCODE_F12:
+                            processCustomKeyEvent(41);
+                            break;
+                        default:
+							break;
+					}
+
                     return false;
                 }
 				// reset any pending toggle states if a modifier was pressed
